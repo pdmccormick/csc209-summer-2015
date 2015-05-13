@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="Peter McCormick">
+
+        <title>CSC209 Summer 2015 &mdash; Week 1 Exercise: Shell Usage</title>
+
+        <!-- Bootstrap core CSS -->
+        <link href="../theme/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom styles for this template -->
+        <link href="../theme/css/style.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+              <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+              <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+            <![endif]-->
+    </head>
+    <body>
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="..">CSC209 Summer 2015</a>
+                </div>
+                <div id="navbar" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="../syllabus.html">Syllabus</a></li>
+                        <li><a href="../lectures.html">Lectures</a></li>
+                        <li><a href="../assignments.html">Assignments</a></li>
+                        <li><a href="../labs.html">Labs</a></li>
+                        <li><a href="../tests.html">Tests</a></li>
+                        <li><a href="../grades.html">Grades</a></li>
+                        <li><a href="../feedback.html">Anonymous Feedback</a></li>
+                        <li><a href="https://piazza.com/utoronto.ca/summer2015/csc209">Piazza</a></li>
+                        <li><a href="https://markus.cdf.toronto.edu/csc209-2015-05/">MarkUs</a></li>
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div>
+        </nav>
+        <div class="container">
+    <div class="page-header">
+    <h1>Week 1 Exercise &mdash; Shell Usage</h1>
+</div>
+
+<h2>Introduction</h2>
+<p>The purpose of this exercise is to get you comfortable doing a variety of everyday tasks using the shell. This lab is not graded, and we are not checking whether or not you complete it, but consider that this kind of hands-on interaction with a Unix environment is a key component of the course, and all users and students alike should aspire to some level of mastery over this material.</p>
+<p>While not formally graded, the <code>checkstep</code> programs are provided to give you feedback on whether or not you are successfully completing the steps. As such, you will need to perform them on a CDF machine. This is good practice anyway, because you need to be familiar with the command line tools on CDF. You can do this from home by remotely logging into the CDF server, by using an SSH terminal program to connect to <code>cdf.toronto.edu</code>. If you are running the Windows platform, you can use <a href="http://www.chiark.greenend.org.uk/~sgtatham/putty/">PuTTY</a>. If you have a Linux or Mac OS X machine, open up the Terminal application and invoke SSH from the shell like any other command, by running <code>ssh c4user@cdf.toronto.edu</code> (with your appropriate username before the @ sign.)</p>
+<p>Commands or programs that you need to do this assignment were mostly covered in class, but there may be a few that weren't. A possibly incomplete list of these commands: <code>ls</code>, <code>cd</code>, <code>chmod</code>, <code>cut</code>, <code>grep</code>, <code>ps</code>, <code>mkdir</code>, <code>touch</code>, <code>export</code>, <code>wc</code>. Don't forget that you have access to the manual page documentation for all shell commands simply by running <code>man <em>command</em></code>. The Linux man pages are also available on the web at <a href="http://man7.org/linux/man-pages/">man7.org</a>.</p>
+<h2>1. Create a directory to do your work in</h2>
+<p>Create a directory in your home directory called <code>csc209_ex1</code>. Change into that directory.</p>
+<p>Run <code>/u/csc209h/summer/pub/bin/checkstep1</code>.</p>
+<p>Read the output to check to see if the checking program thinks you did the first step correctly. If not, fix it and rerun the program before you move on.</p>
+<h2>2. Change your shell</h2>
+<p>If you haven't already changed your shell to Bash, do it now using <code>chsh</code>. Note that <code>chsh</code> needs two arguments. The first is your user name, and the second is "bash". The <code>chsh</code> program connects to a password server to make the change. You will need to log out and log back in to see the effect and it may take a few minutes for the change to propagate.</p>
+<p>Run <code>/u/csc209h/summer/pub/bin/checkstep2</code>.</p>
+<p>(If you really want to change it back to tcsh, you can do so after you are finished with this exercise.)</p>
+<h2>3. Add <code>/u/csc209h/summer/pub/bin</code> to your PATH</h2>
+<p>It's kind of annoying to have to keep typing in the full path to the projects that check your work for this assignment, so add <code>/u/csc209h/summer/pub/bin</code> to your <code>PATH</code> environment variable.</p>
+<p>Modifying environment variables may not have been covered in class. When a shell variable is used, it must be prefaced with a $, but when it is defined it does not have the $ at the front. In order to make variables visible to programs running inside the shell (or subshells), use <code>export</code> command. To add the directory <code>/foo</code> to your path you could use the command <code>export PATH=/foo:$PATH</code>. Note that there cannot be any spaces around the "=", and recall that the PATH is a colon-separated list of paths.</p>
+<p>Now run <code>checkstep3</code> (without using the full path to it.)</p>
+<h2>5. Environment variables</h2>
+<p>You have already seen a few standard environment variables. You can also create your own. Create an environment variable called <code>COLOUR</code> with the value of your favourite colour. Use <code>echo</code> to print it to the screen. Recall that the convention is that environment variables are all upper case.</p>
+<p>Run <code>checkstep5</code>.</p>
+<h2>6. Files and permissions</h2>
+<p>Create an empty directory somewhere in your account where you can create a set of file and subdirectories so that when you run <code>ls -l</code> you will see the following. You will see a different owner, group, dates, and you may see a different file size, but the permissions and the files names should be exactly the same as below. (NOTE: the checkstep program will only give you a SUCCESS message if the <em>only</em> files and directories are the ones it is looking for.)</p>
+<p>You can create directories using <code>mkdir</code> and you can create files using your favourite editor or using <code>touch</code>. Read the man pages for these two commands to find out how they work (e.g., <code>man mkdir</code>.)</p>
+<pre><code>wolf:~% ls -l
+total 2
+drwxr-xr-x 2 pdm instrs 512 Sep 16 10:07 adir
+d--x--x--x 2 pdm instrs 512 Sep 16 10:04 bdir
+-rw-r----- 1 pdm instrs   0 Sep 16 10:04 file1
+-rwxrwxrwx 1 pdm instrs   0 Sep 16 10:04 file2
+-rwx------ 1 pdm instrs   0 Sep 16 10:05 file3
+</code></pre>
+
+<p>Copy <code>longproc</code> from <code>/u/csc209h/summer/pub/bin</code> to adir. Now running <code>ls -l *</code> should look like the following:</p>
+<pre><code>wolf:~% ls -l *
+-rw-r----- 1 pdm instrs   0 Sep 16 10:04 file1
+-rwxrwxrwx 1 pdm instrs   0 Sep 16 10:04 file2
+-rwx------ 1 pdm instrs   0 Sep 16 10:05 file3
+
+adir:
+total 9
+-rwxr-xr-x 1 pdm instrs 8344 Sep 16 10:07 longproc
+ls: cannot open directory bdir: Permission denied
+</code></pre>
+
+<p>Make sure you are in the directory where the <code>ls</code> commands will run as shown above. The current working directory must be the one that contains the 3 files and 2 directories as shown above. Now run <code>checkstep6</code>.</p>
+<h2>7. Processes</h2>
+<p>In the previous step, you copied <code>longproc</code> into <code>adir</code>. Make sure your current working directory is the parent directory of <code>adir</code>. Without changing into the <code>adir</code> directory, run <code>longproc</code> using a relative path. Keep <code>longproc</code> running either in the background, or in another window. Find out what its process id is, and run <code>checkstep7 -p PID</code> where <code>PID</code> is the process id for <code>longproc</code>.</p>
+<p>Now, stop the <code>longproc</code> process without terminating it, and run <code>checkstep71 -p PID</code> where <code>PID</code> is the process id of the stopped <code>longproc</code> process.</p>
+<p>Now make sure that all your <code>longproc</code> processes have been terminated, and run <code>checkstep72</code>.</p>
+<h2>8. Grep</h2>
+<p>Run <code>ps aux</code> and save the output to a file called <code>psout</code>. Using <code>grep</code>, another command, and a pipe, find out how many processes in the <code>psout</code> snapshot are <em>not</em> owned by root (hint: search the grep manpage for a flag that inverts the default matching behaviour.)</p>
+<p>Run <code>checkstep8 -n NUM</code> where <code>NUM</code> is the number of processes not owned by root. (The program will check your answer, but it will also check the time stamp on the psout file and if it is more than 3 minutes old, it will ask you to run the ps command again.) Tip: you might find that you are one off on your answer. To see why, run ps and look at the first line of output (if the output of ps is very long, consider piping it to <code>head</code> or <code>less</code>.)</p>
+<h2>9. Conclusion</h2>
+<p>Congratulations, you made it! Continuing to increase your level of comfort and familiarity with the shell through daily usage will go a long way to ensuring your success in CSC209.</p>
+<hr />
+
+        </div>
+        <footer class="footer">
+            <div class="container">
+                <p class="text-muted">&copy; 2015 Karen Reid &amp; Peter McCormick</p>
+            </div>
+        </footer>
+        <script src="../theme/js/jquery-1.11.2.min.js"></script>
+        <script src="../theme/js/bootstrap.min.js"></script>
+        <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+        <script src="../theme/js/ie10-viewport-bug-workaround.js"></script>
+    </body>
+</html>
