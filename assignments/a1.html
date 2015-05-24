@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="Peter McCormick">
+
+        <title>CSC209 Summer 2015 &mdash; Assignment 1: Memory and Files</title>
+
+        <link href="../theme/css/pygment.css" rel="stylesheet">
+        <!-- Bootstrap core CSS -->
+        <link href="../theme/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom styles for this template -->
+        <link href="../theme/css/style.css" rel="stylesheet">
+
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+              <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+              <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+            <![endif]-->
+    </head>
+    <body>
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="..">CSC209 Summer 2015</a>
+                </div>
+                <div id="navbar" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="../syllabus.html">Syllabus</a></li>
+                        <li><a href="../lectures.html">Lectures</a></li>
+                        <li><a href="../assignments.html">Assignments</a></li>
+                        <li><a href="../labs.html">Labs</a></li>
+                        <li><a href="../tests.html">Tests</a></li>
+                        <li><a href="../grades.html">Grades</a></li>
+                        <li><a href="../feedback.html">Anonymous Feedback</a></li>
+                        <li><a href="https://piazza.com/utoronto.ca/summer2015/csc209">Piazza</a></li>
+                        <li><a href="https://markus.cdf.toronto.edu/csc209-2015-05/">MarkUs</a></li>
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div>
+        </nav>
+        <div class="container">
+    <div class="page-header">
+    <h1>CSC209 Assignment 1: Memory and Files</h1>
+</div>
+
+<p>In this assignment, you will write two C programs that are re-implementations of two classic Unix utilities, the word/line/byte counting program <code>wc</code>, and the extraction portion of the file archiver <code>tar</code>. You will use C command line argument processing, file I/O and memory functions.</p>
+<p><strong>Due Date</strong>: Electronically by Wednesday, June 10, at 10:00 pm.</p>
+<div class="toc">
+<ul>
+<li><a href="#wc-word-line-and-byte-count">wc - word, line and byte count</a></li>
+<li><a href="#wc209-your-reimplementation-of-wc1">wc209 - your reimplementation of wc(1)</a></li>
+<li><a href="#introduction-to-tar">Introduction to tar</a></li>
+<li><a href="#untar-extract-the-contents-of-tar-files">untar - extract the contents of .tar files</a></li>
+<li><a href="#useful-library-functions">Useful Library Functions</a></li>
+<li><a href="#no-crashes">No Crashes</a></li>
+<li><a href="#what-to-submit">What to Submit</a></li>
+<li><a href="#submission-checklist">Submission Checklist</a></li>
+</ul>
+</div>
+<h2 id="wc-word-line-and-byte-count"><code>wc</code> - word, line and byte count</h2>
+<p>The <a href="http://man7.org/linux/man-pages/man1/wc.1.html">wc(1)</a> program counts the
+number of lines, words and bytes in files or from standard input.</p>
+<div class="highlight"><pre><span class="gp">wolf:~$</span> <span class="nb">echo</span> <span class="s2">&quot;one line, eight words and forty two bytes&quot;</span> <span class="p">|</span> wc
+<span class="go">       1       8      42</span>
+<span class="gp">wolf:~$</span> cat quick.txt
+<span class="go">The quick brown fox jumps over the lazy dog</span>
+<span class="go">The quick brown fox jumps over the lazy dog</span>
+<span class="go">The quick brown fox jumps over the lazy dog</span>
+<span class="gp">wolf:~$</span> wc quick.txt
+<span class="go">       3      27     132 quick.txt</span>
+</pre></div>
+
+
+<p>The first column is the number of lines, the second is the number of words, and the
+third is the number of bytes. By default, <em>wc</em> will show all three of these, but
+you can specify which should be displayed by using the following command line options:</p>
+<ul>
+<li><code>-l</code>: print the number of lines</li>
+<li><code>-w</code>: print the number of words</li>
+<li><code>-c</code>: print the number of bytes</li>
+</ul>
+<p>You can specify these in any order you like, but the output counts will always
+appear in the order of first lines (if requested), next words (if requested),
+and finally bytes (if requested.)</p>
+<p>You can also specify multiple options at once after a single dash.</p>
+<div class="highlight"><pre><span class="gp">wolf:~$</span> wc -l -w -c quick.txt
+<span class="go">       3      27     132 quick.txt</span>
+<span class="gp">wolf:~$</span> wc -w -lc quick.txt
+<span class="go">       3      27     132 quick.txt</span>
+<span class="gp">wolf:~$</span> wc -cwl quick.txt
+<span class="go">       3      27     132 quick.txt</span>
+<span class="gp">wolf:~$</span> wc -l quick.txt
+<span class="go">       3 quick.txt</span>
+<span class="gp">wolf:~$</span> wc -lw quick.txt
+<span class="go">       3      27 quick.txt</span>
+<span class="gp">wolf:~$</span> wc -wc quick.txt
+<span class="go">      27     132 quick.txt</span>
+<span class="gp">wolf:~$</span> wc -lc quick.txt
+<span class="go">       3     132 quick.txt</span>
+</pre></div>
+
+
+<p>You can also specify several files at once on the command line. Whenever you
+invoke <em>wc</em> with two or more files it will print a final total line, showing
+the sums of whichever counts were being displayed:</p>
+<div class="highlight"><pre><span class="gp">wolf:~$</span> wc -wlc quick.txt textfile.txt NOTES.txt
+<span class="go">       3      27     132 quick.txt</span>
+<span class="go">       1       8      42 textfile.txt</span>
+<span class="go">       9      64     377 NOTES.txt</span>
+<span class="go">      13      99     551 total</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span class="gp">wolf:~$</span> wc -wl *.txt
+<span class="go">       3      27 quick.txt</span>
+<span class="go">       1       8 textfile.txt</span>
+<span class="go">       9      64 NOTES.txt</span>
+<span class="go">      13      99 total</span>
+</pre></div>
+
+
+<p>Keep in mind that the Bash shell is responsible for expanding <em>glob
+expressions</em> like <code>*.txt</code>, with each matching file path relative to the present
+working directory being passed as a separate "argv" parameter to the
+executable.</p>
+<h2 id="wc209-your-reimplementation-of-wc1"><code>wc209</code> - your reimplementation of <em>wc(1)</em></h2>
+<p>You will reimplement the functionality of <em>wc</em>. The output of your <em>wc209</em>
+program must match the output of <em>wc</em> as closely as possible (the counts must
+be correct, even if the spacing differs.)</p>
+<p>Here is the intended command line usage of your program:</p>
+<p><code>wc209 [-w | -l | -c] [files...]</code></p>
+<ul>
+<li>If no command line options are given, then by default assume <em>-w</em>, <em>-l</em> and <em>-c</em>.</li>
+<li>The options can appear on the command line in any order (which will not affect the order of the output), and repeating an option has no additional effect beyond its first appearance.</li>
+<li>If no files are specified, read from the standard input.</li>
+<li>If any files are specified, read the contents of each file in the order given, collecting the desired counts and then print the summary, with one line for each file.</li>
+<li>If two or more files are specified, after printing the counts for each file, print a final line with the total sums across all specified files.</li>
+<li>Any options specified must appear before any files are specified.</li>
+</ul>
+<p>For the purposes of counting, lines are delineated by a newline character
+(the C character literal <code>'\n'</code>.) If there are no newlines present, the line count should be 0. The
+byte count is simply the total number of bytes in the file (or passed in from
+the standard input.)</p>
+<p>A word is defined as a "maximal string of characters delimited by whitespace"
+(where ASCII whitespace is considered to be one or more of either the blank
+space character, newline, carriage return, form feed, vertical or horizontal
+tab.)</p>
+<p>For example:</p>
+<ul>
+<li>The string <code>"CSC209"</code> contains 1 word.</li>
+<li>The string <code>"two words"</code> contains 2 words.</li>
+<li>The string <code>" ... "</code> contains 1 word, because while not alphabetical, the repeated dots are considered to be a non-whitespace word.</li>
+<li>The string <code>"single...word"</code> contains only 1 word, because there is no whitespace separating 'single' from 'word'.</li>
+<li>The string <code>"words   crossing\nlines  "</code> contains 3 words, because 'crossing' and 'lines' are separated by a whitespace character (i.e. the newline.)</li>
+</ul>
+<p>Use <a href="http://man7.org/linux/man-pages/man3/isspace.3.html">isspace(3)</a> to test
+for whitespace characters. Do not forget to include the system header <em>ctype.h</em>
+in your code in order to access this function without compiler warnings.</p>
+<p>Verify your understanding of this definition by playing around with the real
+<em>wc</em> using echo and a pipe at the shell (see the first example in the above
+section.)</p>
+<p>Use <a href="http://man7.org/linux/man-pages/man3/getopt.3.html">getopt(3)</a> to help you
+parse the command line options and file arguments.</p>
+<p>Use the C standard library functions
+<a href="http://man7.org/linux/man-pages/man3/fopen.3.html">fopen(3)</a>,
+<a href="http://man7.org/linux/man-pages/man3/fclose.3.html">fclose(3)</a>,
+<a href="http://man7.org/linux/man-pages/man3/fread.3.html">fread(3)</a> and
+<a href="http://man7.org/linux/man-pages/man3/feof.3.html">feof(3)</a> to read in the
+contents of files for counting. Also use the globally declared variable <code>FILE
+*stdin</code> (provided for you once you have included <em>stdio.h</em>) to access the file
+stream handle representing the standard input.</p>
+<p>Submit your implementation in a single source code file named <code>wc209.c</code>. In
+your submission also include an executable Bash shell script <code>compile.sh</code> which
+will compile your source file to a executable binary named <code>wc209</code>.  Make sure
+the compiler is informing you of all warnings by using the <em>-Wall</em> option.</p>
+<p>Create various test case input files which you will use to compare the output
+of <em>wc</em> against your own <em>wc209</em>. Include these files in your submission.
+Consider the different corner cases that your code has to handle (for example,
+different word boundaries, blank lines, missing trailing newlines, etc.) Craft
+your test cases to help you verify that your code is correctly matching the
+behaviour of the real <em>wc</em>.</p>
+<p>When in doubt, the behaviour of <em>wc</em> is considered to be correct.</p>
+<p>Include an executable Bash shell script <code>runtests.sh</code> that executes both <em>wc</em>
+and your <em>wc209</em> binary against your various test case input files. Ideally the
+output of each run would be identical. For each test case, pipe the outputs of
+each run to separate files, and use
+<a href="http://man7.org/linux/man-pages/man1/diff.1.html">diff(1)</a> with the <em>-u</em>
+(unified context) option to compare them for any differences. For example: <code>diff
+-u a.txt b.txt</code> will show any differences between <em>a.txt</em> and <em>b.txt</em>, or
+output nothing at all if they are identical. You can also include the <em>-b</em>
+option to ask <em>diff</em> to ignore any differences in whitespace.</p>
+<p>Do not forget to include tests for the standard input case. The <em>-n</em> option to
+<a href="http://man7.org/linux/man-pages/man1/echo.1.html">echo(1)</a> will cause it to
+suppress the printing of a newline character at the end, and you
+can explicitly include newlines yourself by using the <em>\n</em> escape code inside
+of double quoted strings.</p>
+<h2 id="introduction-to-tar">Introduction to <code>tar</code></h2>
+<p>On Unix systems, the <em>t</em>ape <em>ar</em>chive program
+<a href="http://man7.org/linux/man-pages/man1/tar.1.html">tar(1)</a> is used to create and
+manipulate .tar archive files (sometimes referred to as <em>tarballs</em>.) Similar to
+a Zip file, a tarball is a single file that contains within it a collection of
+many other files (unlike zip files though a .tar file is <em>not</em> compressed;
+using <em>gzip</em> or <em>bzip2</em>, you can create compressed .tar.gz or .tar.bz2
+files.)</p>
+<p>The <code>tar</code> utility understands a variety of different command line options:</p>
+<p><code>tar [ -c | -t | -v | -f tarfile | many others ] [paths...]</code></p>
+<p>A few examples:</p>
+<ul>
+<li><code>tar -c -f mytarball.tar textfile.txt shellscript.sh</code>: creates (the <em>-c</em> option) a new tar file named <em>mytarball.tar</em> (specified after the <em>-f</em> option) which will include the files "textfile.txt" and "shellscript.sh"</li>
+<li><code>tar -c -f mytarball.tar subdir/</code>: creates a new tar file named <em>mytarball.tar</em> that will include a directory named "subdir" and all files and sub-directories underneath it (recursively)</li>
+<li><code>tar -t -v -f mytarball.tar</code>: lists (the <em>-t</em> option) the contents of <em>mytarball.tar</em>, using a long listing output format (the <em>-v</em> option for verbose) that resembles the output of <em>ls -l</em></li>
+<li><code>tar -x -v -f mytarball.tar</code>: extracts (the <em>x</em> option) the entire contents of <em>mytarball.tar</em> to the present working directory</li>
+<li><code>tar -x -v -f mytarball.tar shellscript.sh</code>: extracts from <em>mytarball.tar</em> a file named "shellscript.sh" (if the tarball does not contain a file with that name, it will do report a "not found in archive" error)</li>
+</ul>
+<p>The <code>tar</code> options can be bundled as with <em>wc</em> (example: <code>tar -tvf
+mytarball.tar</code>.) As a historical compatibility note, when bundling, <code>tar</code> will
+also let you omit the leading dash if the options are given in the very first
+argument (example: <code>tar tvf mytarball.tar</code>.)</p>
+<h2 id="untar-extract-the-contents-of-tar-files"><code>untar</code> - extract the contents of .tar files</h2>
+<p>You will implement a tarball extraction utility that mimics the operation of
+<a href="http://man7.org/linux/man-pages/man1/tar.1.html">tar(1)</a> when given the
+options <code>-x -f</code>. Your program should take exactly one argument, the path to a
+tar archive file, and it must extract the entire contents of the archive to the
+present working directory.</p>
+<p>Tar files are structured as a sequence of 512 byte <em>records</em> (thus the size of
+a .tar file is always a multiple of 512 bytes.) Each file contained within the
+archive is itself represented as a sequence of records, beginning with a
+<em>header record</em>, followed by zero or more <em>file data</em> records containing the
+binary contents of the file.</p>
+<p>The header contains several fields specifying the file metadata, organized as
+follows:</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Record Offset</th>
+            <th>Field Size</th>
+            <th>Field Purpose</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>0</td>
+            <td>100</td>
+            <td>Filename (complete with leading path)</td>
+        </tr>
+
+        <tr>
+            <td>100</td>
+            <td>8</td>
+            <td>File mode information</td>
+        </tr>
+        <tr>
+            <td>108</td>
+            <td>8</td>
+            <td>Numeric user ID of file owner</td>
+        </tr>
+        <tr>
+            <td>116</td>
+            <td>8</td>
+            <td>Numeric user ID of file group</td>
+        </tr>
+        <tr>
+            <td>124</td>
+            <td>12</td>
+            <td>File size in bytes, specified as an octal (i.e. base 8) character string</td>
+        </tr>
+        <tr>
+            <td>136</td>
+            <td>12</td>
+            <td>Last modified timestamp in Unix epoch format (octal)</td>
+        </tr>
+        <tr>
+            <td>148</td>
+            <td>8</td>
+            <td>Header record checksum</td>
+        </tr>
+        <tr>
+            <td>156</td>
+            <td>1</td>
+            <td>File type (hard link indicator)</td>
+        </tr>
+        <tr>
+            <td>157</td>
+            <td>100</td>
+            <td>Name of hard linked file</td>
+        </tr>
+        <tr>
+    </tbody>
+</table>
+
+<p>For this assignment, the only two fields you need to consider are the
+<em>filename</em> and <em>file size</em> (you will need to use
+<a href="http://man7.org/linux/man-pages/man3/strtol.3.html">strtol(3)</a> to convert the
+file size field to a usable machine integer.) While the real <em>tar</em> takes into
+account the values of the other fields, you may ignore them.</p>
+<p>Note that the file data occupies zero or more 512 byte records, but that the
+file sizes themselves may <em>not</em> necessarily be multiples of 512. If the file
+size is not an exact multiple of 512, the final file data record will contain
+extra zeros for padding, in order keep the record itself 512 bytes in length.
+When reading the tar file you MUST take this padding into account, but when
+extracting the file, you MUST respect the original file size and thus MUST NOT
+include the padding in the output.</p>
+<p>Finally, the end of an archive is signalled by two consecutive records that
+contain all zeroes.</p>
+<p>If the tarball contains directories, or files contained within directories,
+your utility must recursive create the directory structure, that is, it must
+create all the intermediate directories.</p>
+<p>For example, if the tarball contained an entry <code>csc209/testdata/sample1.txt</code>,
+you must first create the directory <code>csc209</code> and then the directory
+<code>csc209/testdata</code> (in that order) before attempting to create the file
+<code>csc209/testdata/sample1.txt</code>.  The C standard library function
+<a href="http://man7.org/linux/man-pages/man3/dirname.3.html">dirname(3)</a> will help you
+extract the path of the enclosing parent directory from a given file path.
+There is also a shell program by the same name, documented in
+<a href="http://man7.org/linux/man-pages/man1/dirname.1.html">dirname(1)</a>, so try
+running <code>dirname csc209/testdata/sample1.txt</code> from the shell to get a sense of
+what this function is able to do for you. <strong>Hint:</strong> this is a recursive
+procedure, so consider what the base case would be, and experiment with
+re-running <em>dirname</em> on the output of the last <em>dirname</em>, and so on.</p>
+<p>For the purposes of this assignment, you do NOT need to check that the
+intermediate file paths are directories (for example, if a <em>file</em> named
+<em>csc209/testdata</em> already existed, the real <em>tar</em> would delete the <em>testdata</em>
+file and replace it with a directory of the same name when extracting an
+archive containing <em>csc209/testdata/sample1.txt</em>.)</p>
+<p>Submit your implementation in a single source code file named <code>untar.c</code>.
+Include a <code>compile.sh</code> executable shell script to compile your source file to
+an executable named <code>untar</code>. Make sure the compiler is informing you of all
+warnings by using the <em>-Wall</em> option.</p>
+<p>Using the real <em>tar</em> utility, create several .tar files of your own for
+testing, and include them in your submission. Consider the different corner
+cases that your code has to handle (for example, issues surrounding directory
+structures and file sizes), and create archives that deal with those
+specifically. Give your archives meaningful names that reflect what they are
+intended to test. Keep in mind that crafting good test cases is an art unto
+itself, and that sometimes a few, very carefully thought out tests can be
+better than many meaningless ones.</p>
+<p>That being said, do not forget to test your utitily against some larger
+archives. For example, trying tarring up your entire assignment submission, and
+then check that your untar can successfully extract it. Be safe and only try
+this in a temporary directory, however, in case your utility erases your source
+code! Do not forget to commit early and commit often.</p>
+<p>Include a <code>runtests.sh</code> executable shell script that tests your implementation
+using the archives you created. This can be as simple as just running untar
+against them, or you could get more creative and verify that the output of your
+utitily actually matches that of <em>tar -x -f</em>. Take a look at
+<a href="http://man7.org/linux/man-pages/man1/diff.1.html">diff(1)</a>, specifically when
+run as <code>diff -Nru adir/ bdir/</code>, for comparing the contents of two directories.</p>
+<p>Remember that creating good tests is not merely an arbitrary assignment
+requirement, but is actually what will ensure the correctness of what your work.</p>
+<h2 id="useful-library-functions">Useful Library Functions</h2>
+<p>When using these functions, do not forget to include the appropriate C headers.
+The manpages will tell you exactly which ones are required for each.</p>
+<ul>
+<li><a href="http://man7.org/linux/man-pages/man3/getopt.3.html">getopt</a>: parses command line options</li>
+<li><a href="http://man7.org/linux/man-pages/man3/strtol.3.html">strtol</a>: converts the string representation of integers in various bases to machine long integers (useful for converting an octal numeric string, for example)</li>
+<li><a href="http://man7.org/linux/man-pages/man2/mkdir.2.html">mkdir</a>: makes a directory (use a <em>mode</em> of 0755 for default user permissions to read/write/list, and group/other to read/list)</li>
+<li><a href="http://man7.org/linux/man-pages/man3/dirname.3.html">dirname</a>: given a path, return a substring string representing the parent directory path (pay close attention to the manpage comment about statically allocated memory, and consider how that might affect a recursive function that calls dirname)</li>
+<li><a href="http://man7.org/linux/man-pages/man3/strdup.3.html">strdup</a>: creates a duplicate copy of a string (performs the equivilent of a <em>strlen</em>, <em>malloc</em> and <em>strcpy</em>; don't forget to call <em>free</em> on the copied string when you are done with it)</li>
+<li><a href="http://man7.org/linux/man-pages/man3/fopen.3.html">fopen</a>, <a href="http://man7.org/linux/man-pages/man3/fclose.3.html">fclose</a>, <a href="http://man7.org/linux/man-pages/man3/fread.3.html">fread</a> and <a href="http://man7.org/linux/man-pages/man3/fwrite.3.html">fwrite</a>: library functions for opening, closing, read and writing to files</li>
+<li><a href="http://man7.org/linux/man-pages/man3/feof.3.html">feof</a>: indicates when you are at the end of a file stream (at which point, there would be nothing left to <em>fread</em>)</li>
+<li><a href="http://man7.org/linux/man-pages/man3/memset.3.html">memset</a>: fill a range of memory bytes with a constant value (useful for zeroing out large buffers during initialization)</li>
+<li><a href="http://man7.org/linux/man-pages/man3/memcmp.3.html">memcmp</a>: compare two equally sized portions of memory for byte-wise equality</li>
+<li><a href="http://man7.org/linux/man-pages/man3/perror.3.html">perror</a>: print an error message describing the last error encountered by a library function (this is useful both to inform the user, as well as yourself during development if you are seeing an error code but are not sure exactly what is causing it)</li>
+</ul>
+<h2 id="no-crashes">No Crashes</h2>
+<p>Your programs should never crash or <em>segfault</em>. Program defensively and do not make unwarranted assumptions. For example:</p>
+<ul>
+<li>Always explicitly check the return values of all C library functions: read the documentation to understand how to interpret error codes, and never silently discard an error but always report it to the user (or work around it)</li>
+<li>Do not assume that someone using your program will know how to use it properly: sanitize user input, and if incorrect options are passed, print a helpful error message plus the intended usage (for example, run <code>wc -foobar</code> and see how, while the output is terse, <em>wc</em> is at least trying to tell you what went wrong and how to properly use the program)</li>
+</ul>
+<h2 id="what-to-submit">What to Submit</h2>
+<p>You will commit to your repository in the <code>a1</code> directory two sub-directories,
+<code>wc209</code> and <code>untar</code>. Under each of these directories, include your C source
+code as a single file, <code>wc209.c</code> and <code>untar.c</code> respectively, as well as the
+shell scripts <code>compile.sh</code> and <code>runtests.sh</code>. As well, include any additional
+test case input files that each of your <code>runtests.sh</code> will use to verify their
+respective implementations.</p>
+<p>Make sure that you have run <code>svn add</code> on every file. Check MarkUs, or checkout
+your repository into a new directory, to verify that everything is there.
+There's nothing we can do if you forget to submit a file.</p>
+<h2 id="submission-checklist">Submission Checklist</h2>
+<p>You can make your life a lot simpler by ensuring that your submission is
+complete right from the start. When you first begin working on the assignment,
+make the directory structure and create (touch) empty files for all of the
+required items (i.e. two C source code files and a total of 4 shell scripts.)
+Add a skeleton <em>main</em> function to the C files. Use one of the lecture scripts
+as the basis for the <code>compile.sh</code>. Do not forget to <code>chmod +x</code> your
+shell scripts to make them executable, and include a <em>shebang</em> line of
+<code>#!/bin/bash</code>. Run <code>svn add</code> for all of these files, and commit.</p>
+<p>Later, when you create your test case input files, do not forget to <code>svn add</code>
+those too.</p>
+<p>Commit early and commit often. There is no penalty for having many commits, and
+in fact it is highly encouraged. Even if you are not finished the assignment,
+but are done for the day, commit your work. You can always pick up where you
+left off, and commit again later once you have made more progress.</p>
+<p>Here is a list of things that you should do on the CDF server at least an hour
+before the assignment deadline:</p>
+<ul>
+<li>Create a temporary directory in your account (different from the one you are working on the assignment from, and not even a subdirectory within that one)</li>
+<li>Check out a fresh copy of your repository into this empty directory</li>
+<li>Ensure that all the correct files have been committed, and that they are the latest versions you expected them to be</li>
+<li>Verify that, for each subdirectory <em>wc209</em> and <em>untar</em>, you can successfully run <code>./compile.sh</code> and that your source code builds without any compiler warnings</li>
+<li>Run your <code>runtests.sh</code> scripts and confirm their output (hopefully you've written them in such a way that it is obvious whether or not your programs are behaving successfully)</li>
+</ul>
+<p>Remember that your submission <strong>MUST</strong> compile and run correctly on CDF,
+without exception.</p>
+
+        </div>
+        <footer class="footer">
+            <div class="container">
+                <p class="text-muted">&copy; 2015 Karen Reid &amp; Peter McCormick</p>
+            </div>
+        </footer>
+        <script src="../theme/js/jquery-1.11.2.min.js"></script>
+        <script src="../theme/js/bootstrap.min.js"></script>
+        <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+        <script src="../theme/js/ie10-viewport-bug-workaround.js"></script>
+    </body>
+</html>
