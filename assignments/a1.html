@@ -173,14 +173,20 @@ in your code in order to access this function without compiler warnings.</p>
 section.)</p>
 <p>Use <a href="http://man7.org/linux/man-pages/man3/getopt.3.html">getopt(3)</a> to help you
 parse the command line options and file arguments.</p>
-<p>Use the C standard library functions
+<p>Use the C standard library stream functions
 <a href="http://man7.org/linux/man-pages/man3/fopen.3.html">fopen(3)</a>,
 <a href="http://man7.org/linux/man-pages/man3/fclose.3.html">fclose(3)</a>,
 <a href="http://man7.org/linux/man-pages/man3/fread.3.html">fread(3)</a> and
-<a href="http://man7.org/linux/man-pages/man3/feof.3.html">feof(3)</a> to read in the
+<a href="http://man7.org/linux/man-pages/man3/feof.3.html">feof(3)</a>, or
+<a href="http://man7.org/linux/man-pages/man3/fgetc.3.html">fgetc(3)</a>, to read in the
 contents of files for counting. Also use the globally declared variable <code>FILE
 *stdin</code> (provided for you once you have included <em>stdio.h</em>) to access the file
 stream handle representing the standard input.</p>
+<p><strong>EDIT (20150526)</strong>: It is your choice whether or not you use a combination of
+<a href="http://man7.org/linux/man-pages/man3/fread.3.html">fread(3)</a> and
+<a href="http://man7.org/linux/man-pages/man3/feof.3.html">feof(3)</a>, or just
+<a href="http://man7.org/linux/man-pages/man3/fgetc.3.html">fgetc(3)</a> alone. Using
+<em>fgetc(3)</em> is simpler and is thus recommended for this part of the assignment.</p>
 <p>Submit your implementation in a single source code file named <code>wc209.c</code>. In
 your submission also include an executable Bash shell script <code>compile.sh</code> which
 will compile your source file to a executable binary named <code>wc209</code>.  Make sure
@@ -334,6 +340,13 @@ intermediate file paths are directories (for example, if a <em>file</em> named
 <em>csc209/testdata</em> already existed, the real <em>tar</em> would delete the <em>testdata</em>
 file and replace it with a directory of the same name when extracting an
 archive containing <em>csc209/testdata/sample1.txt</em>.)</p>
+<p><strong>EDIT (20150526)</strong>: For reading records from the tar archive, you MUST use a
+combination of <a href="http://man7.org/linux/man-pages/man3/fread.3.html">fread(3)</a>
+and <a href="http://man7.org/linux/man-pages/man3/feof.3.html">feof(3)</a>. Beware of the
+relationship between the <em>size</em> and <em>nitems</em> parameters and the return value of
+<em>fread</em>. For writing to output files you may choose between either using
+<a href="http://man7.org/linux/man-pages/man3/fwrite.3.html">fwrite(3)</a> or
+<a href="http://man7.org/linux/man-pages/man3/fputc.3.html">fputc(3)</a>.</p>
 <p>Submit your implementation in a single source code file named <code>untar.c</code>.
 Include a <code>compile.sh</code> executable shell script to compile your source file to
 an executable named <code>untar</code>. Make sure the compiler is informing you of all
@@ -368,7 +381,7 @@ The manpages will tell you exactly which ones are required for each.</p>
 <li><a href="http://man7.org/linux/man-pages/man2/mkdir.2.html">mkdir</a>: makes a directory (use a <em>mode</em> of 0755 for default user permissions to read/write/list, and group/other to read/list)</li>
 <li><a href="http://man7.org/linux/man-pages/man3/dirname.3.html">dirname</a>: given a path, return a substring string representing the parent directory path (pay close attention to the manpage comment about statically allocated memory, and consider how that might affect a recursive function that calls dirname)</li>
 <li><a href="http://man7.org/linux/man-pages/man3/strdup.3.html">strdup</a>: creates a duplicate copy of a string (performs the equivilent of a <em>strlen</em>, <em>malloc</em> and <em>strcpy</em>; don't forget to call <em>free</em> on the copied string when you are done with it)</li>
-<li><a href="http://man7.org/linux/man-pages/man3/fopen.3.html">fopen</a>, <a href="http://man7.org/linux/man-pages/man3/fclose.3.html">fclose</a>, <a href="http://man7.org/linux/man-pages/man3/fread.3.html">fread</a> and <a href="http://man7.org/linux/man-pages/man3/fwrite.3.html">fwrite</a>: library functions for opening, closing, read and writing to files</li>
+<li><a href="http://man7.org/linux/man-pages/man3/fopen.3.html">fopen</a>, <a href="http://man7.org/linux/man-pages/man3/fclose.3.html">fclose</a>, <a href="http://man7.org/linux/man-pages/man3/fread.3.html">fread</a>, <a href="http://man7.org/linux/man-pages/man3/fwrite.3.html">fwrite</a>, <a href="http://man7.org/linux/man-pages/man3/fgetc.3.html">fgetc</a> and <a href="http://man7.org/linux/man-pages/man3/fputc.3.html">fputc</a>: library functions for opening, closing, reading and writing to files</li>
 <li><a href="http://man7.org/linux/man-pages/man3/feof.3.html">feof</a>: indicates when you are at the end of a file stream (at which point, there would be nothing left to <em>fread</em>)</li>
 <li><a href="http://man7.org/linux/man-pages/man3/memset.3.html">memset</a>: fill a range of memory bytes with a constant value (useful for zeroing out large buffers during initialization)</li>
 <li><a href="http://man7.org/linux/man-pages/man3/memcmp.3.html">memcmp</a>: compare two equally sized portions of memory for byte-wise equality</li>
