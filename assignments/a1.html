@@ -228,6 +228,32 @@ C-style escape codes inside of double quoted strings. For example:</p>
 </pre></div>
 
 
+<p><strong>TIP (20150529):</strong> If you want to see the specific bytes that a file contains,
+or the specific bytes that a program like <code>echo</code> produces as output, try using
+<a href="http://man7.org/linux/man-pages/man1/hexdump.1.html">hexdump(1)</a> with the <em>-C</em>
+option, either via a pipe on <em>stdin</em> or by passing in a filename argument:</p>
+<div class="highlight"><pre><span class="gp">olf:~$</span> <span class="nb">echo</span> -e -n <span class="s2">&quot;A\nB&quot;</span> <span class="p">|</span> hexdump -C
+<span class="go">00000000  41 0a 42                                          |A.B|</span>
+<span class="go">00000003</span>
+<span class="gp">wolf:~$</span> hexdump -C quick.txt
+<span class="go">00000000  54 68 65 20 71 75 69 63  6b 20 62 72 6f 77 6e 20  |The quick brown |</span>
+<span class="go">00000010  66 6f 78 20 6a 75 6d 70  73 20 6f 76 65 72 20 74  |fox jumps over t|</span>
+<span class="go">00000020  68 65 20 6c 61 7a 79 20  64 6f 67 0a 54 68 65 20  |he lazy dog.The |</span>
+<span class="go">00000030  71 75 69 63 6b 20 62 72  6f 77 6e 20 66 6f 78 20  |quick brown fox |</span>
+<span class="go">00000040  6a 75 6d 70 73 20 6f 76  65 72 20 74 68 65 20 6c  |jumps over the l|</span>
+<span class="go">00000050  61 7a 79 20 64 6f 67 0a  54 68 65 20 71 75 69 63  |azy dog.The quic|</span>
+<span class="go">00000060  6b 20 62 72 6f 77 6e 20  66 6f 78 20 6a 75 6d 70  |k brown fox jump|</span>
+<span class="go">00000070  73 20 6f 76 65 72 20 74  68 65 20 6c 61 7a 79 20  |s over the lazy |</span>
+<span class="go">00000080  64 6f 67 0a                                       |dog.|</span>
+<span class="go">00000084</span>
+</pre></div>
+
+
+<p>The left most column are byte offsets (in hexadecimal), the middle region are
+the hex values of each individual byte (note that <code>20</code> is an ASCII space
+character, <code>' '</code>, and <code>0a</code> is the ASCII newline, <code>'\n'</code>), and the right portion
+are the printable ASCII characters (with a <code>.</code> representing non-printable
+characters.)</p>
 <h2 id="introduction-to-tar">Introduction to <code>tar</code></h2>
 <p>On Unix systems, the <em>t</em>ape <em>ar</em>chive program
 <a href="http://man7.org/linux/man-pages/man1/tar.1.html">tar(1)</a> is used to create and
