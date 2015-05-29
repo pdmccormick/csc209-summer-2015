@@ -207,6 +207,76 @@ each run to separate files, and use
 -u a.txt b.txt</code> will show any differences between <em>a.txt</em> and <em>b.txt</em>, or
 output nothing at all if they are identical. You can also include the <em>-b</em>
 option to ask <em>diff</em> to ignore any differences in whitespace.</p>
+<p><strong>EDIT (20150529)</strong>: Your <code>wc209</code> does not need to produce the same error
+messages as the real <code>wc</code>. You do, however, need to match the numeric data and
+filename produced, even if the spacing differs. For example:</p>
+<div class="highlight"><pre><span class="gp">wolf:~$</span> <span class="nb">echo</span> <span class="s2">&quot;The quick brown fox jumps over the lazy dog&quot;</span> <span class="p">|</span> ./wc209
+<span class="go">       1    9    44</span>
+<span class="gp">wolf:~$</span> <span class="nb">echo</span> <span class="s2">&quot;The quick brown fox jumps over the lazy dog&quot;</span> <span class="p">|</span> wc
+<span class="go">      1       9      44</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span class="gp">wolf:~$</span> ./wc209 quick.txt quick.txt
+<span class="go">       3      27     132 quick.txt</span>
+<span class="go">       3      27     132 quick.txt</span>
+<span class="go">       6      54     264 total</span>
+<span class="gp">wolf:~$</span> wc quick.txt quick.txt
+<span class="go">  3  27 132 quick.txt</span>
+<span class="go">  3  27 132 quick.txt</span>
+<span class="go">  6  54 264 total</span>
+</pre></div>
+
+
+<p>This output represents a correct <code>wc209</code> solution, because it matches the
+counts produced by <code>wc</code>, even though the spacing is different.</p>
+<p>Using the <code>diff</code> tool, you can quickly produce a formatted <em>patch</em>:</p>
+<div class="highlight"><pre><span class="gp">wolf:~$</span> wc quick.txt quick.txt &gt; real-wc.txt
+<span class="gp">wolf:~$</span> ./wc209 quick.txt quick.txt &gt; 209-wc.txt
+<span class="gp">wolf:~$</span> diff -u real-wc.txt 209-wc.txt
+<span class="go">--- real-wc.txt 2015-05-29 17:25:11.000000000 -0400</span>
+<span class="go">+++ 209-wc.txt  2015-05-29 17:25:25.000000000 -0400</span>
+<span class="go">@@ -1,3 +1,3 @@</span>
+<span class="go">-  3  27 132 quick.txt</span>
+<span class="go">-  3  27 132 quick.txt</span>
+<span class="go">-  6  54 264 total</span>
+<span class="go">+       3      27     132 quick.txt</span>
+<span class="go">+       3      27     132 quick.txt</span>
+<span class="go">+       6      54     264 total</span>
+</pre></div>
+
+
+<p>The patch lines that begin with a minus <code>-</code> represent the lines that would have
+to be removed from <em>real-wc.txt</em>, and the plus <code>+</code> the lines you would have to
+add to <em>real-wc.txt</em>, in order to transform <em>real-wc.txt</em> into <em>209-wc.txt</em>,
+which clearly do differ because the white space is different.</p>
+<p>By using the he <em>-b</em> option you can instruct
+<a href="http://man7.org/linux/man-pages/man1/diff.1.html">diff(1)</a> to stop caring
+about whitespace:</p>
+<div class="highlight"><pre><span class="gp">wolf:~$</span> diff -u -b real-wc.txt 209-wc.txt
+<span class="gp">wolf:~$</span>
+</pre></div>
+
+
+<p>Where no output means that the files are the "same", modulo those whitespace
+differences. This will still catch an incorrectly computed count:</p>
+<div class="highlight"><pre><span class="gp">wolf:~$</span> ./a-broken-wc209 quick.txt quick.txt &gt; broken-209-wc.txt
+<span class="gp">wolf:~$</span> diff -u -b real-wc.txt broken-209-wc.txt
+<span class="go">--- real-wc.txt 2015-05-29 17:25:11.000000000 -0400</span>
+<span class="go">+++ broken-209-wc.txt   2015-05-29 17:29:56.000000000 -0400</span>
+<span class="go">@@ -1,3 +1,3 @@</span>
+<span class="go">   3  27 132 quick.txt</span>
+<span class="go">   3  27 132 quick.txt</span>
+<span class="go">-  6  54 264 total</span>
+<span class="go">+       6      54       0 total</span>
+</pre></div>
+
+
+<p>Here can we observe that <code>a-broken-wc209</code> is outputting a final total of 0
+bytes, which indicates a failure to properly sum them up, and hence a behaviour
+that does not match that of the real <code>wc</code>.</p>
+<p>Use this technique to help you test your <code>wc209</code> implementation, and include it
+in your <code>runtests.sh</code>.</p>
 <p><strong>EDIT (20150529)</strong>: Do not forget to include tests for the standard input
 case. By default <a href="http://man7.org/linux/man-pages/man1/echo.1.html">echo(1)</a>
 will include a newline character (<code>'\n'</code>) at the end of its output, which you
