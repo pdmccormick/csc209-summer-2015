@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     *x_ptr = 42;
     printf("*x_ptr  (after)  = %d\n\n", *x_ptr);
 
-    //printf("x       (after)  = %d\n", x);
+    printf("x       (after)  = %d\n", x);
 
     return 0;
 }

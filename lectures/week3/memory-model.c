@@ -11,6 +11,9 @@ long array[100];
 /* Code */
 void my_func(long func_param);
 
+/**
+ * Show the memory addresse of various pieces of data in a given program
+ */
 int main(int argc, char *argv[])
 {
     /* Stack: local variables and function parameters */
@@ -28,6 +31,12 @@ int main(int argc, char *argv[])
     printf("\n");
 
     my_func(local_var);
+
+    printf("Unused Logical Address Space:\n");
+    unsigned long diff = (unsigned long) &local_var - (unsigned long) &variable;
+    printf("    &local_var - &variable\n");
+    printf("                    = 0x%lx (%lu GiB)\n", diff, diff >> 30);
+    printf("\n");
 
     printf("Dynamic Data (heap allocated):\n");
     printf("    ...\n");
@@ -47,12 +56,6 @@ int main(int argc, char *argv[])
     printf("    &my_func        = 0x%012lx\n", (unsigned long) &my_func);
     printf("    &main           = 0x%012lx\n", (unsigned long) &main);
     printf("\n");
-
-    /*
-    printf("Unused Logical Address Space:\n");
-    unsigned long diff = (unsigned long) &local_var - (unsigned long) &variable;
-    printf("\t&local_var - &variable = 0x%lx (%d GiB)\n", diff, diff >> 30);
-    */
 
     return 0;
 }
