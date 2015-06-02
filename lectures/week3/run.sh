@@ -11,4 +11,4 @@ shift
 [[ ! -d "${BINDIR}/" ]] && mkdir "${BINDIR}/"
 
 # Compile the source and only execute it if GCC does not report an error
-gcc -g -Wall "${INFILE}" -o "${OUTFILE}" && exec "${OUTFILE}" $*
+gcc -g -Wall "${INFILE}" -o "${OUTFILE}" && exec "${OUTFILE}" "$@"
