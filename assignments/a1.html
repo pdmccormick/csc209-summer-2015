@@ -154,7 +154,7 @@ be correct, even if the spacing differs.)</p>
 <li>If no files are specified, read from the standard input.</li>
 <li>If any files are specified, read the contents of each file in the order given, collecting the desired counts and then print the summary, with one line for each file.</li>
 <li>If two or more files are specified, after printing the counts for each file, print a final line with the total sums across all specified files.</li>
-<li>Any options specified must appear before any files are specified.</li>
+<li><strike>Any options specified must appear before any files are specified.</strike> <strong>EDIT (20150604)</strong>: It was pointed out that the GNU libc implementation of <em>getopt(3)</em> will actually handle options and filenames interspersed without issue, so this is no longer a requirement.</li>
 </ul>
 <p>For the purposes of counting, lines are delineated by a newline character
 (the C character literal <code>'\n'</code>.) If there are no newlines present, the line count should be 0. The
