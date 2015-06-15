@@ -23,7 +23,7 @@ static void dump_memory(void *buf, size_t size);
 static void show_list(Chunk *list)
 {
     // TODO FIXME: Implement this function using the following `printf` format string:
-    //printf("    addr=%p size=%lu\n", ... , ... );
+    //printf("    addr=%p size=%zu\n", ... , ... );
 }
 
 /**
@@ -51,7 +51,7 @@ void hexdump_heap()
     Chunk *cur = alloc_list;
 
     while (cur) {
-        printf("SIZE = %lu:\n", cur->size);
+        printf("SIZE = %zu:\n", cur->size);
         dump_memory(cur->addr, cur->size);
 
         if (cur->next) {

@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 
         ptrs[i] = malloc209(num_bytes);
         if (!ptrs[i]) {
-            printf("ERROR: Failed to allocate %lu bytes, aborting\n", num_bytes);
+            printf("ERROR: Failed to allocate %zu bytes, aborting\n", num_bytes);
             return -1;
         }
 
