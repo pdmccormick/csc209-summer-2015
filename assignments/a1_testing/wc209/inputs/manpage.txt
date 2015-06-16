@@ -1,0 +1,7 @@
+wc - print newline, word, and byte counts for each file
+
+Print newline, word, and byte counts for each FILE, and a total line if more
+than one FILE is specified. With no FILE read standard input. A word is a
+non-zero-length sequence of characters delimited by white space. The options
+below may be used to select which counts are printed, always in the following
+order: newline, word, byte.

@@ -3,3 +3,4 @@ a.out
 *.class
 
 lectures/*/bin/
+assignments/a1_testing/untar/outputs/
