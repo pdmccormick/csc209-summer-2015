@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
+#include "signal2str.h"
+
 int main(int argc, char *argv[])
 {
     if (argc < 2) {
@@ -55,7 +57,7 @@ int main(int argc, char *argv[])
         if (WIFSIGNALED(status)) {
             // Wait - Terminating Signal
             int termsig = WTERMSIG(status);
-            printf("parent: child process was terminated by signal '%s' (%d)\n", sys_signame[termsig], termsig);
+            printf("parent: child process was terminated by signal SIG%s (#%d)\n", signal2str(termsig), termsig);
         }
 
         printf("parent: exiting\n");

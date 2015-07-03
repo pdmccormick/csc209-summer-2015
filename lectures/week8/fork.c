@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     }
     else {
         // Fork returned a positive value, meaning we are the original parent process
-        printf("parent: pid %ld\n", (long) getpid());
+        printf("parent: pid %ld, child %ld\n", (long) getpid(), (long) child);
     }
 
     pause();

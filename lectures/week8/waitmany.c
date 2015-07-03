@@ -4,6 +4,8 @@
 #include <signal.h>
 #include <sys/wait.h>
 
+#include "signal2str.h"
+
 int main(int argc, char *argv[])
 {
     if (argc < 2) {
@@ -81,12 +83,11 @@ int main(int argc, char *argv[])
         }
         else if (WIFSIGNALED(status)) {
             int termsig = WTERMSIG(status);
-            printf("parent: child pid %ld was terminated by signal '%s' (%d)\n", (long) w, sys_signame[termsig], termsig);
-            num_exited++;
+            printf("parent: child pid %ld was terminated by signal SIG%s (#%d)\n", (long) w, signal2str(termsig), termsig);
         }
         else if (WIFSTOPPED(status)) {
             int stopsig = WSTOPSIG(status);
-            printf("parent: child pid %ld was stopped by signal '%s' (%d)\n", (long) w, sys_signame[stopsig], stopsig);
+            printf("parent: child pid %ld was stopped by signal SIG%s (#%d)\n", (long) w, signal2str(stopsig), stopsig);
         }
         else if (WIFCONTINUED(status)) {
             printf("parent: child pid %ld continued\n", (long) w);
