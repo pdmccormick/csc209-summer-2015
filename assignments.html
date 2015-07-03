@@ -9,11 +9,13 @@
 
         <title>CSC209 Summer 2015 &mdash; Assignments</title>
 
+        <link href="./theme/css/pygment.css" rel="stylesheet">
         <!-- Bootstrap core CSS -->
         <link href="./theme/css/bootstrap.min.css" rel="stylesheet">
 
         <!-- Custom styles for this template -->
         <link href="./theme/css/style.css" rel="stylesheet">
+
 
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -40,10 +42,17 @@
                         <li class="active"><a href="./assignments.html">Assignments</a></li>
                         <li><a href="./labs.html">Labs</a></li>
                         <li><a href="./tests.html">Tests</a></li>
-                        <li><a href="./grades.html">Grades</a></li>
-                        <li><a href="./feedback.html">Anonymous Feedback</a></li>
-                        <li><a href="https://piazza.com/utoronto.ca/summer2015/csc209">Piazza</a></li>
-                        <li><a href="https://markus.cdf.toronto.edu/csc209-2015-05/">MarkUs</a></li>
+                        <li><a href="./resources.html">Resources</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Links <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="feedback.html">Anonymous Feedback</a></li>
+                                <li><a href="https://piazza.com/utoronto.ca/summer2015/csc209">Piazza</a></li>
+                                <li><a href="https://markus.cdf.toronto.edu/csc209-2015-05/">MarkUs</a></li>
+                                <li><a href="https://www.cdf.toronto.edu/students/">CDF Grades</a></li>
+                                <li><a href="http://www.cdf.toronto.edu/~csc209h/winter/lectures.html">CSC209 Winter 2015</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </div><!--/.nav-collapse -->
             </div>
@@ -55,7 +64,7 @@
 
 <p>To submit a request for remarking, please do so through <a href="https://markus.cdf.toronto.edu/csc209-2015-05/">MarkUs</a> (and consult the <a href="syllabus.html">syllabus</a> for guidelines on such a request.)</p>
 <p>Remember that all of your assignment submissions <em>must</em> compile on CDF, otherwise <strong>you will receive a mark of 0</strong>.</p>
-<h2>Overview</h2>
+<h2 id="overview">Overview</h2>
 <table class="table">
     <thead>
         <tr>
@@ -66,13 +75,13 @@
     </thead>
     <tbody>
         <tr>
-            <td>A1</td>
-            <td>Implementing Unix utilities using C</td>
+            <td><a href="assignments/a1.html">A1</a></td>
+            <td><a href="assignments/a1.html">Memory and Files</a></td>
             <td>Wednesday, June 10 at 10pm</td>
         </tr>
         <tr>
-            <td>A2</td>
-            <td><em>C and Pointers</em></td>
+            <td><a href="assignments/a2.html">A2</a></td>
+            <td><a href="assignments/a2.html">Pointers and Dynamic Memory</a></td>
             <td>Wednesday, July 1 at 10pm</td>
         </tr>
         <tr>
@@ -88,7 +97,7 @@
     </tbody>
 </table>
 
-<h2>Working Environment</h2>
+<h2 id="working-environment">Working Environment</h2>
 <p>You will be using an Subversion (SVN) repository to manage your assignments. Your life will be considerably easier if you read and follow the instructions for working on and submitting your assignment. If you need a refresher on how to use Subversion, please refer to the <a href="http://svnbook.red-bean.com/">Version Control with Subversion</a> book. Appendix A is a quick start guide and a good place to start.</p>
 <p>If you are comfortable using <a href="http://git-scm.com/">Git</a>, a distributed version control system, or would like to learn more about it, you may be interested in trying <a href="http://git-scm.com/docs/git-svn">git-svn</a>, which is a mechanism for using Git locally while interfacing with remote Subversion repositories. It is still your responsibility to ensure that your work is correctly committed to the supplied SVN repository, and any use or misuse of <code>git-svn</code> will not be considered as a valid excuse for incorrect assignment submissions.</p>
 

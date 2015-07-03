@@ -1,0 +1,158 @@
+CSC209 Course Syllabus -- Summer 2015
+
+Overview
+
+   Welcome to CSC209: Software Tools and Systems Programming. The course
+   is designed to introduce software techniques and tools used in a
+   Unix/Linux environment. We will study C, a low-level programming
+   language, and use it to examine the interface between the operating
+   system and user-level programs.
+
+Contact Information
+
+   Instructor:
+          Peter McCormick
+
+   Email:
+          pdm -at- cs.toronto.edu
+
+   Lectures:
+          L5101 Thursday 6-8pm (SF1101)
+
+     * Suggested Textbooks:
+          + King, [14]C Programming: A Modern Approach. W. W. Norton and
+            Company, 2008 (highly recommended)
+          + Kerrisk, [15]Linux Programming Interface. No Starch Press,
+            2010 ([16]errata)
+     * Website and Discussion Board: The course website contains lecture
+       notes, assignment handouts, and, most importantly, a link to the
+       [17]Piazza discussion board. The board can get you fast, accurate
+       response to your questions a but it only works if everyone
+       participates! We will also use the boards to post announcements and
+       updates, so Piazza is required daily reading.
+     * Email: Please use email for personal issues and the discussion
+       board for all other course-related questions. I try to respond to
+       email by the end of the next day. However, due to volume, it may
+       take longer, especially on weekends (I am often not able to answer
+       email more than once on the weekend.)
+     * Anonymous Feedback: If you have feedback about the course, the
+       course web page includes a [18]link to an anonymous email form.
+       (You also have the option of including your name.) Since the sender
+       cannot be determined, comments sent through the feedback system are
+       considered public, and they may receive a response at the beginning
+       of class or on Piazza.
+
+Grading Scheme and Assignment Schedule
+
+   Type of Work Topics Weight Due Date
+   Exercises 4% 10pm on Friday
+   A1 Basic C 8% Wednesday, June 10 at 10pm
+   A2 C and Pointers 10% Wednesday, July 1 at 10pm
+   Midterm Shell and C 15% [19]Tuesday, June 23 from 7-8pm in UC 266
+   A3 Processes and Pipes 10% Wednesday, July 22 at 10pm
+   A4 Network Server 8% Friday, August 7 at 11:59pm
+   Final Exam Everything 45%
+
+   To pass the course you must receive at least 40% on the final exam. The
+   highest mark you will receive if your grade on the final exam is less
+   than 40% is 47%.
+
+   Any section of an assignment in which the C program does not compile on
+   CDF will receive a grade of 0. If you can explain clearly in a
+   remarking request how to fix the problem, your program will be remarked
+   with a 20% penalty. Errors in submission such as missing files,
+   incorrectly named files, putting files in the wrong place may be graded
+   with a 20% penalty.
+
+Policies
+
+     * Late Work: All assignments are submitted electronically and are due
+       at 10 p.m. sharp on the due date (with the sole exception being for
+       Assignment 4, which is due at 11:59 p.m. on the due date.) Each
+       student begins the semester with three grace day tokens.
+          + At most two grace days may be used for a single assignment.
+          + Submitting an assignment up to 1 day (24 hours) late uses one
+            token. Submitting an assignment up to 2 days (48 hours) late
+            uses two tokens. Once your tokens have been used late
+            assignments will not be accepted.
+          + Grace days may not be used for labs.
+          + Grace days may not be used for Assignment 4.
+          + Please note that 10:01 p.m. will be considered late (or
+            12:00am for A4), therefore ensure that your work is not
+            submitted at the very last second. Because you will be using
+            version control, it is very easy to commit regularly to avoid
+            running into the deadline.
+
+   Remarking requests that result from incorrect submissions will receive
+   a 20% penalty.
+     * Religious Holidays: If a religious holiday will keep you from
+       completing any assigned work, please let me know as soon as
+       possible (but no later than two weeks before the due date), and we
+       will work out a mutually agreeable accommodation.
+     * Emergencies: In the event of an illness or other catastrophe,
+       obtain appropriate documentation (e.g., medical certificate) and
+       contact me by email within 48 hours of the due date. It is always
+       easier to make alternate arrangements before a due date, so please
+       inform me as soon as you know that you will need accommodation.
+     * Re-mark Requests: If a piece of work has been mis-marked or if you
+       believe the rubric used to evaluate the work is not appropriate,
+       you may request a re-mark. For a re-mark to succeed, you must
+       clearly and concisely express what you believe was mis-marked. To
+       request a re-mark, use the form for the assignment on [20]MarkUs.
+       Requests must be submitted within 2 weeks of the marks being
+       returned.
+     * Academic Integrity: All of the work you submit must be done by you
+       and your work must not be submitted by someone else. Plagiarism is
+       academic fraud and is taken very seriously. The department uses
+       software that compares programs for evidence of similar code.
+       Please read the [21]Rules and Regulations from the U of T Calendar
+       (especially the Code of Behaviour on Academic Matters). Here are a
+       couple of guidelines to help you avoid plagiarism:
+          + Never look at another student's or group's assignment solution
+            or idea for a solution, whether it is on paper or on the
+            computer screen, and don't allow your solution to be viewed by
+            or come into the possession of another student.
+          + Maintain absolute control of your work a including notes and
+            partial solutions a at all times.
+          + We encourage you to discuss course concepts and to study for
+            exams with other students, but any work that is submitted
+            should be your own. The easiest way to avoid plagiarism is to
+            only discuss submitted work with your partner or the
+            instructor.
+          + Similarly, Google (and Wikipedia) may help you with course
+            material, but do not use the internet to look for solutions to
+            the assignment problems.
+     * Accessibility Needs: The University of Toronto is committed to
+       accessibility. If you require accommodations for a disability, or
+       have any accessibility concerns about the course, the classroom or
+       course materials, please contact Accessibility Services as soon as
+       possible: [22]accessibility.services@utoronto.ca or
+       [23]http://www.accessibility.utoronto.ca/.
+
+   (c) 2015 Karen Reid & Peter McCormick
+
+References
+
+   1. http://www.cdf.toronto.edu/~csc209h/summer/
+   2. http://www.cdf.toronto.edu/~csc209h/summer/syllabus.html
+   3. http://www.cdf.toronto.edu/~csc209h/summer/lectures.html
+   4. http://www.cdf.toronto.edu/~csc209h/summer/assignments.html
+   5. http://www.cdf.toronto.edu/~csc209h/summer/labs.html
+   6. http://www.cdf.toronto.edu/~csc209h/summer/tests.html
+   7. http://www.cdf.toronto.edu/~csc209h/summer/resources.html
+   8. http://www.cdf.toronto.edu/~csc209h/summer/syllabus.html
+   9. http://www.cdf.toronto.edu/~csc209h/summer/feedback.html
+  10. https://piazza.com/utoronto.ca/summer2015/csc209
+  11. https://markus.cdf.toronto.edu/csc209-2015-05/
+  12. https://www.cdf.toronto.edu/students/
+  13. http://www.cdf.toronto.edu/~csc209h/winter/lectures.html
+  14. http://knking.com/books/c2/index.html
+  15. http://man7.org/tlpi/index.html
+  16. http://man7.org/tlpi/errata/index.html
+  17. https://piazza.com/utoronto.ca/summer2015/csc209/
+  18. http://www.cdf.toronto.edu/~csc209h/summer/feedback.html
+  19. http://www.artsci.utoronto.ca/current/exams/june15
+  20. https://markus.cdf.toronto.edu/csc209-2015-05/
+  21. http://www.governingcouncil.utoronto.ca/policies/behaveac.htm
+  22. mailto:accessibility.services@utoronto.ca
+  23. http://www.accessibility.utoronto.ca/

@@ -9,11 +9,13 @@
 
         <title>CSC209 Summer 2015 &mdash; Welcome!</title>
 
+        <link href="./theme/css/pygment.css" rel="stylesheet">
         <!-- Bootstrap core CSS -->
         <link href="./theme/css/bootstrap.min.css" rel="stylesheet">
 
         <!-- Custom styles for this template -->
         <link href="./theme/css/style.css" rel="stylesheet">
+
 
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -40,10 +42,17 @@
                         <li><a href="./assignments.html">Assignments</a></li>
                         <li><a href="./labs.html">Labs</a></li>
                         <li><a href="./tests.html">Tests</a></li>
-                        <li><a href="./grades.html">Grades</a></li>
-                        <li><a href="./feedback.html">Anonymous Feedback</a></li>
-                        <li><a href="https://piazza.com/utoronto.ca/summer2015/csc209">Piazza</a></li>
-                        <li><a href="https://markus.cdf.toronto.edu/csc209-2015-05/">MarkUs</a></li>
+                        <li><a href="./resources.html">Resources</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Links <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="feedback.html">Anonymous Feedback</a></li>
+                                <li><a href="https://piazza.com/utoronto.ca/summer2015/csc209">Piazza</a></li>
+                                <li><a href="https://markus.cdf.toronto.edu/csc209-2015-05/">MarkUs</a></li>
+                                <li><a href="https://www.cdf.toronto.edu/students/">CDF Grades</a></li>
+                                <li><a href="http://www.cdf.toronto.edu/~csc209h/winter/lectures.html">CSC209 Winter 2015</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </div><!--/.nav-collapse -->
             </div>
@@ -53,10 +62,10 @@
     <h1>Welcome to CSC209 &mdash; Software Tools and Systems Programming</h1>
 </div>
 
-<h2>Course Description</h2>
+<h2 id="course-description">Course Description</h2>
 <p>Software techniques in a Unix-style environment, using scripting languages and a machine-oriented programming language (typically C). What goes on in the operating system when programs are executed. Core topics: creating and using software tools, pipes and filters, file processing, shell programming, processes, system calls, signals, basic network programming.</p>
 <p>Make sure to read and understand the <a href="syllabus.html">course syllabus</a>. Check the <a href="https://piazza.com/utoronto.ca/summer2015/csc209">Piazza discussion board</a> frequently to make sure you receive course announcements.</p>
-<h2>Contact Information</h2>
+<h2 id="contact-information">Contact Information</h2>
 <dl class="dl-horizontal">
     <dt>Instructor:</dt>
     <dd>Peter McCormick</dd>
@@ -68,7 +77,7 @@
     <dd>Tuesdays 2-4pm in BA3201</dd>
 </dl>
 
-<h2>Lectures</h2>
+<h2 id="lectures">Lectures</h2>
 <table class="table">
     <thead>
         <tr>
@@ -86,11 +95,38 @@
     </tbody>
 </table>
 
-<h2>Labs</h2>
-<p>Labs will take place immediately following the lecture timeslot, on Thursday 8-9pm, in the Bahen labs (BA3175, BA3185 and BA3195.) Details will be forthcoming.</p>
-<h2>Tracking The Course Website Using Git</h2>
+<h2 id="labs">Labs</h2>
+<p>Labs will take place immediately following the lecture timeslot, on Thursday 8-9pm, in the 2nd floor Bahen labs.</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Last Names</th>
+            <th>Room</th>
+            <th>TA</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>A-H</td>
+            <td>BA2270</td>
+            <td>Daniel Kats</td>
+        </tr>
+        <tr>
+            <td>I-M</td>
+            <td>BA2240</td>
+            <td>Alexey Khrabrov</td>
+        </tr>
+        <tr>
+            <td>N-Z</td>
+            <td>BA2220</td>
+            <td>Michael Chiu <br /> Pan Zhang</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="tracking-the-course-website-using-git">Tracking The Course Website Using Git</h2>
 <p>You can track all changes and updates to this site via the <a href="https://github.com/pdmccormick/csc209-summer-2015">GitHub repository <em>pdmccormick/csc209-summer-2015</em></a>. As a bonus, by cloning and pulling this repo you will have a complete copy of all the lecture materials as soon as they are posted.</p>
-<h2>Calendar</h2>
+<h2 id="calendar">Calendar</h2>
 <p>You can subscribe to this calendar via <a href="https://www.google.com/calendar/ical/abhk3pmidirsssegq3g9575dq4%40group.calendar.google.com/public/basic.ics">iCal</a> or <a href="https://www.google.com/calendar/feeds/abhk3pmidirsssegq3g9575dq4%40group.calendar.google.com/public/basic">XML</a>.</p>
 <iframe src="https://www.google.com/calendar/embed?src=abhk3pmidirsssegq3g9575dq4%40group.calendar.google.com&ctz=America/Toronto" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
 

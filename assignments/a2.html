@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="Peter McCormick">
+
+        <title>CSC209 Summer 2015 &mdash; Assignment 2: Implementing Dynamic Memory Management</title>
+
+        <link href="../theme/css/pygment.css" rel="stylesheet">
+        <!-- Bootstrap core CSS -->
+        <link href="../theme/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom styles for this template -->
+        <link href="../theme/css/style.css" rel="stylesheet">
+
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+              <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+              <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+            <![endif]-->
+    </head>
+    <body>
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="..">CSC209 Summer 2015</a>
+                </div>
+                <div id="navbar" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="../syllabus.html">Syllabus</a></li>
+                        <li><a href="../lectures.html">Lectures</a></li>
+                        <li><a href="../assignments.html">Assignments</a></li>
+                        <li><a href="../labs.html">Labs</a></li>
+                        <li><a href="../tests.html">Tests</a></li>
+                        <li><a href="../resources.html">Resources</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Links <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="feedback.html">Anonymous Feedback</a></li>
+                                <li><a href="https://piazza.com/utoronto.ca/summer2015/csc209">Piazza</a></li>
+                                <li><a href="https://markus.cdf.toronto.edu/csc209-2015-05/">MarkUs</a></li>
+                                <li><a href="https://www.cdf.toronto.edu/students/">CDF Grades</a></li>
+                                <li><a href="http://www.cdf.toronto.edu/~csc209h/winter/lectures.html">CSC209 Winter 2015</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div>
+        </nav>
+        <div class="container">
+    <div class="page-header">
+    <h1>CSC209 Assignment 2: Implementing Dynamic Memory Management</h1>
+</div>
+
+<p><strong>Due Date</strong>: Electronically by Wednesday, July 1, at 10:00 pm.</p>
+<div class="toc">
+<ul>
+<li><a href="#introdution">Introdution</a></li>
+<li><a href="#starter-code">Starter Code</a></li>
+<li><a href="#details">Details</a></li>
+<li><a href="#testing-10">Testing (10%)</a></li>
+<li><a href="#makefile-5">Makefile (5%)</a></li>
+<li><a href="#valgrind">Valgrind</a></li>
+<li><a href="#code-quality-10">Code Quality (10%)</a></li>
+<li><a href="#what-to-submit">What to Submit</a></li>
+<li><a href="#submission-checklist">Submission Checklist</a></li>
+</ul>
+</div>
+<h2 id="introdution">Introdution</h2>
+<p>The library functions and system calls that implement dynamic memory allocation
+operate on a contiguous region of memory called the <em>heap</em>. Your task is to
+implement simple versions of
+<em><a href="http://man7.org/linux/man-pages/man3/malloc.3.html">malloc(3)</a></em> and
+<em><a href="http://man7.org/linux/man-pages/man3/malloc.3.html">free(3)</a></em> called
+<code>malloc209</code> and <code>free209</code>. These two functions operate nearly the same way as
+<em>malloc</em> and <em>free</em> do: <code>malloc209</code> makes memory available for use (it
+<em>allocates memory</em>) and <code>free209</code> releases, or <em>frees</em>, that memory back into
+the heap pool once you are done with it. One difference between <em>free</em> and your
+<code>free209</code> is that your version will return an integer status code: 0 on
+success, and -1 on error (the usual <em>free</em> has a <code>void</code> return type, and thus
+does not return a value.)</p>
+<h2 id="starter-code">Starter Code</h2>
+<p>Before you can start the assignment, you <strong>MUST</strong> download the starter code and
+commit it to your Subversion repository under the <code>a2</code> directory. You can
+access the code by 3 means:</p>
+<ul>
+<li><a href="a2_files/csc209h1y_2015-a2_starter_code-r2.tar">By downloading a tarball</a> (current revision <strong>2</strong>): from the CDF shell, you can use <em><a href="http://manpages.ubuntu.com/manpages/precise/man1/wget.1.html">wget(1)</a></em> followed by this URL to download the archive to your current working directory.</li>
+<li><a href="a2_files/a2_starter_code/">From the course website</a></li>
+<li><a href="https://github.com/pdmccormick/csc209-summer-2015/tree/master/assignments/a2_files/a2_starter_code">From the course GitHub repository</a></li>
+</ul>
+<p>Whichever method you prefer, ensure that you have all <strong>6</strong> files of the
+starter code.</p>
+<h2 id="details">Details</h2>
+<p>The starter code provided will compile without warning or error (simply type
+<code>make</code> from the shell), but it will not function correctly until you implement
+the following features:</p>
+<ul>
+<li><strong><code>void heap209_init(size_t heap_size)</code></strong>: (<strong>5%</strong>) Initialize the memory and metadata that manage the dynamic memory allocation of the heap. Part of this function has been provided for you, using the <em><a href="http://man7.org/linux/man-pages/man2/mmap.2.html">mmap(2)</a></em> system call to arrange a large contiguous region of memory for heap storage (see the comments in <em>heap209.c</em> for some further explanation about this interesting system call.) You <strong>MUST</strong> use the standard library function <em>malloc</em> to allocate space for <code>Chunk</code>  data, a typedef'd struct defined in <em><a href="https://github.com/pdmccormick/csc209-summer-2015/tree/master/assignments/a2_files/a2_starter_code/heap209.h#L20">heap209.h</a></em>, and initialize the heap metadata global variables to their starting values.</li>
+<li><strong><code>void heap209_cleanup(void)</code></strong>: (<strong>10%</strong>) Uses the standard library function <em>free</em> to release <strong>all</strong> the dynamically allocated memory used by the heap metadata (the <code>alloc_list</code> and <code>free_list</code> structures), thus in effect destroying the heap. This function <strong>MUST</strong> be called prior to program exiting. <a href="http://valgrind.org/">Valgrind</a> <strong>MUST</strong> report <code>all heap memory freed</code>, otherwise you have forgotten to free something and thus have a memory leak (see below for details on using Valgrind.)</li>
+<li><strong><code>void *malloc209(size_t nbytes)</code></strong>: (<strong>30%</strong>) Reserves <code>nbytes</code> of memory from within the heap region (as initialized by <code>heap209_init</code>.) If the allocation is successfully, a <em>void pointer</em> to the newly reserved memory will be returned. If the allocation fails for any reason (for example, if there is insufficient free space to accomodate the request), <code>NULL</code> shall be returned.</li>
+<li><strong><code>int free209(void *addr)</code></strong>: (<strong>30%</strong>) Releases the memory pointed to by <code>addr</code> back to the heap for reuse in fulfilling future allocations. If <code>addr</code> is not the address of any currently allocated chunk of the heap, <code>free209</code> shall return <em>-1</em>. If it succeeds, it shall return <em>0</em>.</li>
+</ul>
+<p>There are three global variables that together represent the heap memory region
+and its associated metadata (forward declarations using <code>extern</code> are available
+from the
+<em><a href="https://github.com/pdmccormick/csc209-summer-2015/tree/master/assignments/a2_files/a2_starter_code/heap209.h#L35">heap209.h</a></em>
+header, and their actual definition is in <em><a href="https://github.com/pdmccormick/csc209-summer-2015/tree/master/assignments/a2_files/a2_starter_code/heap209.c#L16">heap209.c</a></em>):</p>
+<ul>
+<li><strong><code>heap_region</code></strong>: a <em>void</em> pointer to the starting address of the heap memory region reserved by <code>heap209_init</code>.</li>
+<li><strong><code>free_list</code></strong>: a linked list of type <code>Chunk</code> (a typedef'd structure) that delineate the portions of the heap region that are <em>not</em> allocated, and are thus free (available) for use via allocation. Chunks in this list <strong>MUST</strong> be stored in increasing order of the <code>addr</code> field value.</li>
+<li><strong><code>alloc_list</code></strong>: similar to <code>free_list</code>, but instead of storing unallocated chunks of the heap, this list stores the chunks that were previously allocated through a call to <code>malloc209</code>. Chunks in this list <strong>MUST</strong> be stored in increasing order of the <code>addr</code> field value.</li>
+</ul>
+<p>You can think of the <code>heap_region</code> as a large array of bytes, and it is your
+responsibility to partition it up into chunks when <code>malloc209</code> is called. The
+<em>metadata</em> associated with this heap are the two linked list of chunks, those
+allocated (currently in use) and those free (unused and thus available for
+allocation.) To complete <code>heap209_init</code>, you need to create the first chunk
+with address and size associated with the whole <code>heap_region</code>. After
+<code>heap209_init</code> completes, the <code>alloc_list</code> should be empty but initialized, and
+the <code>free_list</code> should contain one chunk representing the whole heap.</p>
+<p>The following diagram shows the state of memory after <code>heap209_init</code> has
+initialized the heap region and associated metadata:</p>
+<p><img alt="The state of memory after heap209_init has been called. heap_region points to the starting address of the space reserved by mmap. free_list points to a single node where the addr field holds the same value as heap_region, and the size field is the amount of memory reserved by mmap" src="a2_files/0-heap_init.png"></p>
+<p>When <code>malloc209(nbytes)</code> is called, is searches the <code>free_list</code> for a chunk
+that is <em>at least</em> <code>nbytes</code> in size. There are two possibilities if it finds
+such a chunk: the chunk might be exactly the required size (<code>size == nbytes</code>),
+or the chunk might be larger than required. If the chunk found has a <code>size</code>
+that is larger than <code>nbytes</code>, then it will split the block into two. The first,
+containing the address and size of the allocated chunk, is placed in the
+<code>alloc_list</code> (such that the list remains in order of ascending addresses),
+representing the successful allocation that <em>malloc209</em> has just made. The
+second chunk will contain the remaining free (unallocated) memory that was
+beyond what was required, and this chunk will stay in the <code>free_list</code>.</p>
+<p>Suppose we have a test program that makes the following three calls to
+<code>malloc209</code>. The state of the heap metadata is shown below:</p>
+<div class="highlight"><pre><span class="kt">void</span> <span class="o">*</span><span class="n">ptrs</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+<span class="n">ptrs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">malloc209</span><span class="p">(</span><span class="mi">16</span><span class="p">);</span>
+<span class="n">ptrs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">malloc209</span><span class="p">(</span><span class="mi">24</span><span class="p">);</span>
+<span class="n">ptrs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">malloc209</span><span class="p">(</span><span class="mi">32</span><span class="p">);</span>
+</pre></div>
+
+
+<p><img alt="The free_list has one chunk with address 0x7f6082008048 and size 13100. The alloc_list has three chunks: address 0x7f6082008000 with size 16, address 0x7f6082008010 with size 24, and address 0x7f6082008028 with size 32." src="a2_files/1-three_mallocs.png"></p>
+<p>The next diagram shows the state of the metadata data after the following call
+to <code>free209</code>:</p>
+<div class="highlight"><pre><span class="n">free209</span><span class="p">(</span><span class="n">ptrs</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+</pre></div>
+
+
+<p><img alt="The free_list has tho chunks with address 0x7f6082008048 with size 13100, and address 0x7f6082008010 with size 24. The alloc_list has two chunks: address 0x7f6082008000 with size 16, and address 0x7f6082008028 with size 32." src="a2_files/2-one_free.png"></p>
+<h2 id="testing-10">Testing <strong>(10%)</strong></h2>
+<p>In addition to completing the four functions to implement the dynamic memory
+system, you will also write one test program in
+<code>test-<em>CDF_USER</em>.c</code> (where the characters <em>CDF_USER</em>
+should be substituted for your actual CDF account username) that tests your
+functions. You may use <code>test-basic1.c</code> as a guide for how to write a test, but
+your program <strong>MUST</strong> demonstrate an interesting test case. Determining what
+makes an interesting case is a judgement call you need to make, and part of
+what we are marking.  Your <code>test-<em>CDF_USER</em>.c</code> program
+<strong>MUST</strong> include a comment at the top of the file explaining the scenario that
+is under test and why you think it is interesting. Feel free to add additional
+diagnostics and sanity checks to the code.</p>
+<p>To make <code>test-basic1.c</code> fully functional, you will need to complete the <code>show_list</code>
+function in <code>diagnostics.c</code>.</p>
+<h2 id="makefile-5">Makefile <strong>(5%)</strong></h2>
+<p>Add a rule (or rules) to the <code>Makefile</code> to properly build an executable called
+<code>test-<em>CDF_USER</em></code> (again, substituting <em>CDF_USER</em> for your
+username.)</p>
+<p>Add another rule to the <code>Makefile</code> with the target <strong>tests</strong> and the
+prerequisites <code>test-basic1</code> and <code>test-<em>CDF_USER</em></code> that runs
+both test programs.</p>
+<h2 id="valgrind">Valgrind</h2>
+<p><a href="http://valgrind.org">Valgrind</a> is an incredibly powerful tool that can automatically detect certain kinds of memory errors and misbehaviours within your programs. For this assignment you are to use it to check and ensure that your program is not leaking any memory (i.e. chunk metadata than you <em>malloc</em> but forget or are unable to later <em>free</em>.)</p>
+<p>Run it as follows:</p>
+<div class="highlight"><pre><span class="gp">$</span> valgrind ./test-basic1
+</pre></div>
+
+
+<p>The output will include the output from the <code>test-basic1</code> program itself, as well as a output from Valgrind that will be prefixed with lines like <code>==33880==</code> (the number, which is the <em>process identifier</em> or <em>pid</em> of the execution of the program, will vary, but the general format will remain the same.) The most useful piece of information from Valgrind will come at the end in the form of a <em>heap summary</em>:</p>
+<div class="highlight"><pre>==33880==
+==33880== HEAP SUMMARY:
+==33880==     in use at exit: 0 bytes in 0 blocks
+==33880==   total heap usage: 6 allocs, 6 frees, 144 bytes allocated
+==33880==
+==33880== All heap blocks were freed -- no leaks are possible
+==33880==
+==33880== For counts of detected and suppressed errors, rerun with: -v
+==33880== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 2 from 2)
+</pre></div>
+
+
+<p>The critical message that you want to see is <code>All heap blocks were freed -- no
+leaks are possible</code> (the suppressed errors are not important.) If your program
+inadvertently leaks memory (some pointers returned by <em>malloc</em> are never passed
+to <em>free</em> before program termination), you will see a summary that looks
+something like the following:</p>
+<div class="highlight"><pre>==34248== HEAP SUMMARY:
+==34248==     in use at exit: 1,000 bytes in 1 blocks
+==34248==   total heap usage: 7 allocs, 6 frees, 1,144 bytes allocated
+==34248==
+==34248== LEAK SUMMARY:
+==34248==    definitely lost: 1,000 bytes in 1 blocks
+==34248==    indirectly lost: 0 bytes in 0 blocks
+==34248==      possibly lost: 0 bytes in 0 blocks
+==34248==    still reachable: 0 bytes in 0 blocks
+==34248==         suppressed: 0 bytes in 0 blocks
+==34248== Rerun with --leak-check=full to see details of leaked memory
+</pre></div>
+
+
+<p>Here we are being told that the pointer returned by a <code>malloc(1000)</code> call was
+never passed to <code>free</code> before the program terminated, and that the memory was
+most certainly lost because the program had no pointers to it that memory
+anywhere at all (it was the case that we simply forgot to call <em>free</em>, but that
+we would have been unable to even if we had wanted.) Other kinds of memory
+leaks will be reported differently, so read the leak summary carefully.</p>
+<h2 id="code-quality-10">Code Quality <strong>(10%)</strong></h2>
+<p>The quality of the code you write is always important. Use clear variable
+names, consistent and readable formatting, informative comments that are not
+pedantic, and generally apply good design and human communication principles.</p>
+<p>Since what constitutes <em>good</em> design is highly subjective, feel free to solicit
+advice from the course staff and consider further developing your own aesthetic
+taste.</p>
+<h2 id="what-to-submit">What to Submit</h2>
+<p>You <strong>MUST</strong> begin this assignment by checking in all of the starter code under
+the <code>a2</code> directory within your repository. This includes all <code>.c</code> source code
+files, <code>.h</code> header files and the <code>Makefile</code>.</p>
+<p>As you proceed, make sure that you run <code>svn add</code> on every new file you add.
+Feel free to include in your repository whatever else you deem worthy.</p>
+<p>If you forget to add a file or forget to commit a change, there is nothing that
+the course staff will be able to do for you.</p>
+<p>You should be able to run <code>valgrind ./test-basic1</code> and see the message <code>All
+heap blocks were freed -- no leaks are possible</code>, while also seeing the correct
+output from the program itself.</p>
+<h2 id="submission-checklist">Submission Checklist</h2>
+<p>Commit early and commit often (at least every 2-3 hours that you spend working
+on the assignment.) Consider this as insurance against any last minute SVN
+problems, or against possibly missing a deadline.</p>
+<p>Here is a list of things that you should do on the CDF server at least an hour
+before the assignment deadline:</p>
+<ul>
+<li>Create a new temporary directory in your account (different from the one you are working on the assignment from, and not even a subdirectory within that one)</li>
+<li>Check out a fresh copy of your repository into this empty directory</li>
+<li>Ensure that all the correct files have been committed, and that they are the latest versions you expected them to be</li>
+<li>Run <code>make</code> and ensure that at least <code>test-basic1</code> compiles without warnings or errors.</li>
+<li>Run <code>./test-basic1</code>, as well as your own test programs, to be sure that everything works as expected.</li>
+<li>Run <code>valgrind ./test-basic1</code>, as well as Valgrind on your own test programs, to make sure that no memory is left allocated in the heap at the end of the program run.</li>
+</ul>
+<p>Remember that your submission <strong>MUST</strong> compile and run correctly on CDF,
+without exception.</p>
+<hr />
+
+        </div>
+        <footer class="footer">
+            <div class="container">
+                <p class="text-muted">&copy; 2015 Karen Reid &amp; Peter McCormick</p>
+            </div>
+        </footer>
+        <script src="../theme/js/jquery-1.11.2.min.js"></script>
+        <script src="../theme/js/bootstrap.min.js"></script>
+        <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+        <script src="../theme/js/ie10-viewport-bug-workaround.js"></script>
+    </body>
+</html>
