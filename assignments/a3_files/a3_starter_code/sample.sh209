@@ -1,0 +1,44 @@
+#!./sh209
+
+# Show the current working directory
+pwd
+
+# Long list
+ls -l
+
+# Redirect STDOUT to a file
+ls -l > file.out
+
+# Display that file
+cat file.out
+
+# Pipe one command into another
+ls -l | wc -l
+
+ls -l | grep file.out
+
+# STDOUT redirected to file (so there is nothing to pipe)
+ls -l > filelist.out | wc -l
+cat filelist.out
+
+# Redirect the STDOUT of the piped command
+ls -l | wc -l > wc.out
+cat wc.out
+
+ls -l > ls.out | wc -l > wc.out
+cat ls.out
+cat wc.out
+rm -f ls.out wc.out
+
+# Multiple chained pipes
+ls -l | grep student | wc -l
+ps aux | grep student | grep bash | grep -v grep | wc -l
+
+# The following should report an error, something like: "grepp: No such file or directory")
+ls -l | grepp student
+
+# Same idea, but `isa` is mistyped
+lsa -l | grep student
+
+echo
+echo "The End."
