@@ -25,7 +25,6 @@ static const char *signal2str(int signum)
         SIGNAL2STR_DEF(PIPE),
         SIGNAL2STR_DEF(ALRM),
         SIGNAL2STR_DEF(TERM),
-        SIGNAL2STR_DEF(STKFLT),
         SIGNAL2STR_DEF(CHLD),
         SIGNAL2STR_DEF(CONT),
         SIGNAL2STR_DEF(STOP),
@@ -38,9 +37,13 @@ static const char *signal2str(int signum)
         SIGNAL2STR_DEF(VTALRM),
         SIGNAL2STR_DEF(PROF),
         SIGNAL2STR_DEF(WINCH),
+        SIGNAL2STR_DEF(SYS),
+
+#       ifdef __linux__
+        SIGNAL2STR_DEF(STKFLT),
         SIGNAL2STR_DEF(POLL),
         SIGNAL2STR_DEF(PWR),
-        SIGNAL2STR_DEF(SYS),
+#       endif
     };
 
     const int len = sizeof (num2str) / sizeof (num2str[0]);
