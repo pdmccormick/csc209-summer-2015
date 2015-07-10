@@ -38,7 +38,6 @@ static const char *signal2str(int signum)
         SIGNAL2STR_DEF(PROF),
         SIGNAL2STR_DEF(WINCH),
         SIGNAL2STR_DEF(SYS),
-        SIGNAL2STR_DEF(INFO),
 
 #       ifdef __linux__
         SIGNAL2STR_DEF(STKFLT),

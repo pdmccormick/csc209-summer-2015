@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     fd = open(filename, O_RDONLY);
 
     if (fd < 0) {
-        fprintf(stderr, "Unable to open %s for reading", filename);
+        fprintf(stderr, "Unable to open %s for reading\n", filename);
         perror("open");
         return -1;
     }

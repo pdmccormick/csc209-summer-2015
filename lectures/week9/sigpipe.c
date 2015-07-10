@@ -6,7 +6,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include "signal2str.h"
+#include "waithelper.h"
 
 int main(int argc, char *argv[])
 {
