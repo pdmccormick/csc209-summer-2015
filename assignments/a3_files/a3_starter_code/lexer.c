@@ -225,10 +225,21 @@ int lexer_match(Lexer *ctx, Token *tok)
                 end_token = 1;
                 break;
 
+            case ' ': case '\t':
+            case '\n':
+            case EOF:
+                // Wasn't "2>" after all...
+                ctx->state = ST_INIT;
+                tok->kind = TOK_ARG;
+                eat_cur = 0;
+                end_token = 1;
+                break;
+
             default:
                 // Wasn't "2>" after all...
                 ctx->state = ST_BAREWORD;
-                kind = TOK_ARG;
+                tok->kind = TOK_ARG;
+                append_token = 1;
             }
             break;
 
