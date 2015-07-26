@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="Peter McCormick">
+
+        <title>CSC209 Summer 2015 &mdash; Assignment 4: Implementing a TCP/IP Chat Server</title>
+
+        <link href="../theme/css/pygment.css" rel="stylesheet">
+        <!-- Bootstrap core CSS -->
+        <link href="../theme/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom styles for this template -->
+        <link href="../theme/css/style.css" rel="stylesheet">
+
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+              <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+              <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+            <![endif]-->
+    </head>
+    <body>
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="..">CSC209 Summer 2015</a>
+                </div>
+                <div id="navbar" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="../syllabus.html">Syllabus</a></li>
+                        <li><a href="../lectures.html">Lectures</a></li>
+                        <li><a href="../assignments.html">Assignments</a></li>
+                        <li><a href="../labs.html">Labs</a></li>
+                        <li><a href="../tests.html">Tests</a></li>
+                        <li><a href="../resources.html">Resources</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Links <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="feedback.html">Anonymous Feedback</a></li>
+                                <li><a href="https://piazza.com/utoronto.ca/summer2015/csc209">Piazza</a></li>
+                                <li><a href="https://markus.cdf.toronto.edu/csc209-2015-05/">MarkUs</a></li>
+                                <li><a href="https://www.cdf.toronto.edu/students/">CDF Grades</a></li>
+                                <li><a href="http://www.cdf.toronto.edu/~csc209h/winter/lectures.html">CSC209 Winter 2015</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div>
+        </nav>
+        <div class="container">
+    <div class="page-header">
+    <h1>CSC209 Assignment 4: Implementing a TCP/IP Chat Server</h1>
+</div>
+
+<p><strong>Due Date</strong>: Electronically by Friday, August 7, at 11:59 pm. You may <strong>NOT</strong> use any grace days for this assignment.</p>
+<div class="toc">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#before-you-begin">Before You Begin</a></li>
+<li><a href="#starter-code">Starter Code</a></li>
+<li><a href="#objective">Objective</a></li>
+<li><a href="#the-data-types">The Data Types</a><ul>
+<li><a href="#the-server-structure">The Server structure</a></li>
+<li><a href="#the-client-structure">The Client structure</a></li>
+<li><a href="#the-channel-structure">The Channel structure</a></li>
+</ul>
+</li>
+<li><a href="#list-of-required-changes">List of Required Changes</a></li>
+<li><a href="#what-to-submit">What to Submit</a></li>
+<li><a href="#submission-checklist">Submission Checklist</a></li>
+</ul>
+</div>
+<h2 id="introduction">Introduction</h2>
+<p>In this assignment, you will be completing a multi-client TCP/IP chat server.
+Users of your server will be able to connect, change their preferred nick name,
+create and join other named channels, exchange chat messages and see who else
+is currently connected to the server. Starter code has been provided that lays
+a foundation of the data structures used to maintain the server, clients and
+channels, but the implementation still requires the core socket setup code and <code>select</code>
+event loop to allow incoming connections. You will implement this, as well as
+add several features to let users interact with the server and communicate with
+their fellow peers.</p>
+<p>Please read over this entire handout at least <strong>twice</strong> before you get started,
+so that you have a clear picture of what you have to do.</p>
+<h2 id="before-you-begin">Before You Begin</h2>
+<p>A completed, fully functional chat server is currently running on CDF on port
+<strong>20209</strong>. You can connect to this server using the already provided
+<code>chatclient</code>, which you can build yourself from the starter code or can be
+found pre-built under <code>/u/csc209h/summer/pub/bin/chatclient</code>:</p>
+<div class="highlight"><pre><span class="gp">wolf:~$</span> /u/csc209h/summer/pub/bin/chatclient localhost 20209
+<span class="go">Connection to 127.0.0.1 port 20209 succeeded!</span>
+<span class="go">! Welcome to the CSC209 Chat Server</span>
+<span class="go">! Type /help &lt;ENTER&gt; to see a list of available commands</span>
+<span class="go"> * @user2 has joined #csc209</span>
+<span class="go">@user2 #csc209&gt;</span>
+</pre></div>
+
+
+<p>The chat client provides a slightly easier to use interface (it lets the server
+change the prompt and won't trample text you are currently writing while other
+messages are received), but the protocol for this server is fundamentally text
+based, meaning that you can just as well connect and interact with the server
+using <em>netcat</em>:</p>
+<div class="highlight"><pre><span class="gp">wolf:~$</span> /bin/nc -v localhost 20209
+<span class="go">Connection to localhost 20209 port [tcp/*] succeeded!</span>
+<span class="go">! Welcome to the CSC209 Chat Server</span>
+<span class="go">! Type /help &lt;ENTER&gt; to see a list of available commands</span>
+<span class="go"> * @user2 has joined #csc209</span>
+<span class="go">/prompt @user2 #csc209</span>
+</pre></div>
+
+
+<p>Try connecting to the server via both means, and then try the <code>/help</code> command:</p>
+<div class="highlight"><pre><span class="gp">wolf:~$</span> /u/csc209h/summer/pub/bin/chatclient localhost 20209
+<span class="go">Connection to 127.0.0.1 port 20209 succeeded!</span>
+<span class="go">! Welcome to the CSC209 Chat Server</span>
+<span class="go">! Type /help &lt;ENTER&gt; to see a list of available commands</span>
+<span class="go"> * @user2 has joined #csc209</span>
+<span class="go">@user2 #csc209&gt; /help</span>
+<span class="go">! Command help for the CSC209 Chat Server</span>
+<span class="go">! ---------------------------------------</span>
+<span class="go">!</span>
+<span class="go">! Display this help message:</span>
+<span class="go">!      /help</span>
+<span class="go">!</span>
+<span class="go">! Join a named channel:</span>
+<span class="go">!      /join &lt;channel&gt;</span>
+<span class="go">!</span>
+<span class="go">! Set your nick name on this server:</span>
+<span class="go">!      /nick &lt;name&gt;</span>
+<span class="go">!</span>
+<span class="go">! Disconnect from this server:</span>
+<span class="go">!      /disconnect</span>
+<span class="go">!</span>
+<span class="go">! List all the current channels on this server:</span>
+<span class="go">!      /channels</span>
+<span class="go">!</span>
+<span class="go">! List all the currently connected clients on this server:</span>
+<span class="go">!      /who</span>
+<span class="go">!</span>
+<span class="go">@user2 #csc209&gt;</span>
+</pre></div>
+
+
+<p>The server accepts commands beginning with a <code>/</code>. You can change your nick name wing <code>/nick</code>:</p>
+<div class="highlight"><pre><span class="go">@user2 #csc209&gt; /nick astudent</span>
+<span class="go"> * @user2 is now known as @astudent</span>
+<span class="go">@astudent #csc209&gt;</span>
+</pre></div>
+
+
+<p>You can see who else is currently connected to this server:</p>
+<div class="highlight"><pre><span class="go">@astudent #csc209&gt; /who</span>
+<span class="go">!   @pdm (#csc209)</span>
+<span class="go">!   @astudent (#csc209)</span>
+<span class="go">@astudent #csc209&gt;</span>
+</pre></div>
+
+
+<p>When using <em>chatclient</em>, notice that your prompt is being updated to reflect
+your current nick name and channel membership (by default, new users should
+join the <em>csc209</em> channel.) This prompt display mechanism is a feature of
+<em>chatclient</em>, but is implemented simply by the server sending the client a
+command <code>/prompt</code> command. You can see the raw behaviour in effect by using
+<em>netcat</em>:</p>
+<div class="highlight"><pre><span class="gp">wolf:~$</span> /bin/nc -v localhost 20209
+<span class="go">Connection to localhost 20209 port [tcp/*] succeeded!</span>
+<span class="go">! Welcome to the CSC209 Chat Server</span>
+<span class="go">! Type /help &lt;ENTER&gt; to see a list of available commands</span>
+<span class="go"> * @user2 has joined #csc209</span>
+<span class="go">/prompt @user2 #csc209</span>
+<span class="go">/nick astudent</span>
+<span class="go">/prompt @astudent #csc209</span>
+<span class="go"> * @user2 is now known as @astudent</span>
+</pre></div>
+
+
+<p>The <code>/prompt ...</code> text is is being sent by the server and received by the client.</p>
+<p>This server supports (as will yours soon) hosting conversations in multiple
+named named <em>channels</em>. Users can create any channel they wish simply by
+joining it:</p>
+<div class="highlight"><pre><span class="go">@astudent #csc209&gt; /join a4</span>
+<span class="go"> * @astudent has joined #a4</span>
+<span class="go">@astudent #a4&gt; /who</span>
+<span class="go">!   @pdm (#csc209)</span>
+<span class="go">!   @astudent (#a4)</span>
+<span class="go">@astudent #a4&gt;</span>
+</pre></div>
+
+
+<p>Aside from commands, anything else that a user enters will be sent to all members of the current channel:</p>
+<div class="highlight"><pre><span class="go">@astudent #a4&gt; /join csc209</span>
+<span class="go"> * @astudent has joined #csc209</span>
+<span class="go">@astudent #csc209&gt; is anyone here?</span>
+<span class="go">astudent: is anyone here?</span>
+<span class="go">pdm: welcome!</span>
+<span class="go">@astudent #csc209&gt; thanks!</span>
+<span class="go">astudent: thanks!</span>
+<span class="go">@astudent #csc209&gt;</span>
+</pre></div>
+
+
+<p>Experiment with this server, and notice the various messages that are reported.
+Especially try with two concurrent client connections; the server will inform
+you when other clients have joined or are leaving the current channel.</p>
+<h2 id="starter-code">Starter Code</h2>
+<p>Before you can start the assignment, you <strong>MUST</strong> download the starter code and
+commit it to your Subversion repository under the <code>a4</code> directory. You can
+access the code by 3 means:</p>
+<ul>
+<li><a href="a4_files/csc209h1y_2015-a4_starter_code-r1.tar">By downloading a tarball</a> (current revision <strong>1</strong>): from the CDF shell, you can use <em><a href="http://manpages.ubuntu.com/manpages/precise/man1/wget.1.html">wget(1)</a></em> followed by this URL to download the archive to your current working directory.</li>
+<li><a href="a4_files/a4_starter_code/">From the course website</a></li>
+<li><a href="https://github.com/pdmccormick/csc209-summer-2015/tree/master/assignments/a4_files/a4_starter_code">From the course GitHub repository</a></li>
+</ul>
+<p>Whichever method you prefer, ensure that you have all <strong>12</strong> files of the
+starter code.</p>
+<p>The starter code consists of two parts. The first is a fully functional and
+completed <em>chat client</em>, and the second is a corresponding but as-yet
+incomplete <em>chat server</em>. For this assignment you will be completing the server
+portion.</p>
+<p>The following files from the starter code are <em>incomplete</em>, and thus you <strong>MUST</strong>
+complete them according to the embedded <code>TODO FIXME</code> comments:</p>
+<ul>
+<li><code>chatserver.c</code>: the main socket setup and <code>select</code> event loop of the chat server</li>
+<li><code>client.c</code>: routines to handle manipulating the <code>Client</code> data type, representing active TCP/IP connections made to the server</li>
+<li><code>channel.c</code>: routines to handle manipulating the <code>Channel</code> data type, representing currently active channels on the server</li>
+<li><code>command.c</code>: routines for dealing with and responding to client <code>/command</code>s</li>
+</ul>
+<p>The following files in the starter code are complete and <em>do not</em> require any
+modification, but you will be required to understand what they are doing:</p>
+<ul>
+<li><code>defs.h</code>: definitions of the <code>Server</code>, <code>Client</code> and <code>Channel</code> data types; you <strong>MUST</strong> study these definitions carefully, as they are the essential glue that ties together the pieces of the server implementation</li>
+<li><code>chatclient.c</code>: a small, fully functional TCP/IP client application that provides a convenient interface to the chat server</li>
+<li><code>channel.h</code>, <code>client.h</code> and <code>command.h</code>: the header files with prototype definitions for the corresponding C source</li>
+<li><code>util.c</code> and <code>util.h</code>: small parsing utility routines shared between the client and server</li>
+<li><code>Makefile</code>: builds both <em>chatserver</em> and <em>chatclient</em></li>
+</ul>
+<h2 id="objective">Objective</h2>
+<p>In this assignment, your task is to complete the implementation of a chat
+server application by filling in all the necessary socket code. Much of the
+structure of this server has already been provided in the form of the core data
+types and associated manipulation routines, but several critical pieces of user
+facing functionality has yet to be added.</p>
+<p>execution of command line tools and programs. Early in the course, we worked
+with the Unix shell, and more recently we have studied Unix processes and
+pipes. It is time to put all of this together and write your own mini-shell
+that can almost give <em>Bash</em> a run for its money.</p>
+<p>Your shell should allow running command line programs that have zero, one or
+multiple arguments. Commands can be <em>built-in</em> functions where no process is
+spawned, simple <em>non-builtin</em> commands where a process is spawned to execute
+them, and complex <em>non-builtin</em> commands where an operator such as a pipe (|)
+is used to chain commands. You should build this functionality into your shell
+one at a time using the steps recommended below:</p>
+<ul>
+<li><strong>Step 1</strong>: Download and commit the starter code; read through all of the starter code, especially the comments. You will not be able to make progress until you understand the basic structures and the control flow.</li>
+<li><strong>Step 2</strong>: Implement the necessary socket setup code in <code>server_setup</code> (from <code>chatserver.c</code>)<ul>
+<li>After this, you should be able to use <em>netcat</em> to almost connect to your server (it will be listening on a bound TCP port), but it will not yet be able to respond in any meaningful way</li>
+</ul>
+</li>
+<li><strong>Step 3</strong>: Implement the <em>select</em> event loop in <code>server_run</code> (from <code>chatserver.c</code>), new connection handling code in <code>server_accept_new_client</code> (from <code>chatserver.c</code>) and the first item for <code>client_close</code> (from <code>client.c</code>)<ul>
+<li>After this, you will be able to connect to your server and it will receive client input</li>
+<li>You should be able to send a <code>/help</code> command and see a response from the server</li>
+<li>Your server will be able to properly handle clients who disconnect</li>
+</ul>
+</li>
+<li><strong>Step 4</strong>: Complete the rest of <code>client_close</code>, <code>channel_broadcast</code>, <code>channel_add_client</code> and <code>channel_remove_client</code> (from <code>channel.c</code>)<ul>
+<li>Make sure you understand what the functions defined in <code>client.c</code> can do for you!</li>
+</ul>
+</li>
+<li><strong>Step 5</strong>: Implement <code>command_join</code> (from <code>command.c</code>) and then the final piece of <code>server_handle_client_input</code> (from <code>chatserver.c</code>):<ul>
+<li>After this, your server should be able to correctly respond to <code>/join</code> commands, and if you make more than one client connection to the server, those clients should be able to exchange chat messages back and forth within a channel</li>
+</ul>
+</li>
+<li><strong>Step 6</strong>: Implement the rest of the <code>command_*</code> functions (from <code>command.c</code>) in order to handle <em>/nick</em>, <em>/who</em> and <em>/channels</em> commands</li>
+</ul>
+<h2 id="the-data-types">The Data Types</h2>
+<p>Whenever you are writing a server that can handle multiple concurrent client
+connections, carefully and cleanly organizing your data structures to keep
+track of everything will be hugely beneficial.</p>
+<p>For this assignment, 3 key data types have been defined for you in <code>defs.h</code>:
+<code>Server</code>, <code>Client</code> and <code>Channel</code>. They are each responsible for keeping track
+of one aspect of the chat server, and they contain many mutual pointers among
+them.</p>
+<p>While most of the delicate handling code has already been provided for you in
+the starter code, it is through these data types that you will be able to
+complete this assignment, so carefully studying them and understanding their
+purpose is vital.</p>
+<p>You do <strong>NOT</strong> need to modify any of these definitions in order to complete the
+assignment. If you wish, you may add extra fields to add new features and
+capabilities, but if you find yourself thinking that they are <em>incomplete</em> in
+some essential sense, ask yourself why and post your questions to Piazza.</p>
+<h3 id="the-server-structure">The <code>Server</code> structure</h3>
+<p>This structure contains all the required socket and <em>select</em> infrastructure, as
+way as tracks all the currently connected clients and currently registered
+channels on the server (the provided starter code in <code>channel.c</code> and <code>client.c</code>
+already correctly manage the <code>clients</code> and <code>channels</code> fields for you.)</p>
+<p>Think of this structure as the root of a graph of pointers, with references to
+dynamically allocated <code>Client</code> and <code>Channel</code> structures associated with the
+current operation of the server (each of which have pointers back into this
+root structure and amongst themselves.)</p>
+<div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="n">_server</span> <span class="n">Server</span><span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">_server</span> <span class="p">{</span>
+    <span class="cm">/** The listening socket file descriptor for this server */</span>
+    <span class="kt">int</span> <span class="n">sockfd</span><span class="p">;</span>
+
+    <span class="cm">/** The bind() address of this server */</span>
+    <span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="n">addr</span><span class="p">;</span>
+
+    <span class="cm">/** Number of currently connected clients */</span>
+    <span class="kt">int</span> <span class="n">num_clients</span><span class="p">;</span>
+
+    <span class="cm">/** A set of all currently active socket file descriptors (both clients and</span>
+<span class="cm">     * the listening server socket) */</span>
+    <span class="n">fd_set</span> <span class="n">all_sock_fds</span><span class="p">;</span>
+
+    <span class="cm">/** The largest file descriptor in the `all_sock_fds` set */</span>
+    <span class="kt">int</span> <span class="n">max_fd</span><span class="p">;</span>
+
+    <span class="cm">/** All currently connected clients (a NULL pointer indicates no client</span>
+<span class="cm">     * connection is stored in that slot) */</span>
+    <span class="n">Client</span> <span class="o">*</span><span class="n">clients</span><span class="p">[</span><span class="n">SERVER_MAX_CLIENTS</span><span class="p">];</span>
+
+    <span class="cm">/** Number of channels currently active on this server */</span>
+    <span class="kt">int</span> <span class="n">num_channels</span><span class="p">;</span>
+
+    <span class="cm">/** The currently active channels on this server */</span>
+    <span class="n">Channel</span> <span class="o">*</span><span class="n">channels</span><span class="p">[</span><span class="n">SERVER_MAX_CHANNELS</span><span class="p">];</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<h3 id="the-client-structure">The <code>Client</code> structure</h3>
+<p>Each time a new client connection is accepted by the server, a new <code>Client</code>
+structure is dynamically allocated and linked into a free slot in
+<code>Servers.clients</code> (see <code>client_new</code> from <code>client.c</code>; this is already provided
+for you.) This structure keeps track of the socket file descriptor and client
+address of that connection, as well as the nick name of the client and
+whichever channel they are currently in.</p>
+<div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="n">_client</span> <span class="n">Client</span><span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">_client</span> <span class="p">{</span>
+    <span class="cm">/** The server that this client is currently connected to */</span>
+    <span class="n">Server</span> <span class="o">*</span><span class="n">server</span><span class="p">;</span>
+
+    <span class="cm">/** Socket file descriptor for this client */</span>
+    <span class="kt">int</span> <span class="n">sockfd</span><span class="p">;</span>
+
+    <span class="cm">/** Client address returned by accept() system call */</span>
+    <span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="n">addr</span><span class="p">;</span>
+
+    <span class="cm">/** Nickname of this client */</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">nick</span><span class="p">;</span>
+
+    <span class="cm">/** Pointer to the `Server.clients` entry that points to this client */</span>
+    <span class="n">Client</span> <span class="o">**</span><span class="n">server_clients</span><span class="p">;</span>
+
+    <span class="cm">/** Current channel of this client */</span>
+    <span class="n">Channel</span> <span class="o">*</span><span class="n">channel</span><span class="p">;</span>
+
+    <span class="cm">/** Pointer to the `Channel.clients` entry that points to this client */</span>
+    <span class="n">Client</span> <span class="o">**</span><span class="n">channel_clients</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<p><em>Note:</em> The <code>server_clients</code> and <code>channel_clients</code> fields are pointers to the
+respective array index slot containing a pointer (hence a double pointer) from
+<code>Server.clients</code> and <code>Channel.clients</code> that currently point to this client. In
+this way, when removing a client from the system, instead of searching each of
+<code>Server.clients</code> for a particular pointer, in order to NULL out that array
+index slot, the client tracks where it is in that list and can thus easily
+remove itself. This trick is used here as well as by the <code>Channel</code> type.</p>
+<h3 id="the-channel-structure">The <code>Channel</code> structure</h3>
+<p>Each channel has a unique name on the server, as well as a list of all current
+member clients. The provided routines in <code>channel.c</code> deal with setting up and
+manipulating this structure.</p>
+<div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="n">_channel</span> <span class="n">Channel</span><span class="p">;</span>
+<span class="k">struct</span> <span class="n">_channel</span> <span class="p">{</span>
+    <span class="cm">/** The server that this channel is currently registered on */</span>
+    <span class="n">Server</span> <span class="o">*</span><span class="n">server</span><span class="p">;</span>
+
+    <span class="cm">/** Name of this channel */</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+
+    <span class="cm">/** Pointer to the `Server.channels` entry that points to this channel */</span>
+    <span class="n">Channel</span> <span class="o">**</span><span class="n">server_channels</span><span class="p">;</span>
+
+    <span class="cm">/** Number of currently connected clients */</span>
+    <span class="kt">int</span> <span class="n">num_clients</span><span class="p">;</span>
+
+    <span class="cm">/** All clients who are currently members of this channel */</span>
+    <span class="n">Client</span> <span class="o">*</span><span class="n">clients</span><span class="p">[</span><span class="n">CHANNEL_MAX_CLIENTS</span><span class="p">];</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<h2 id="list-of-required-changes">List of Required Changes</h2>
+<p>From <code>chatserver.c</code>:</p>
+<ol>
+<li><code>server_setup</code>: Complete the server socket setup procedure</li>
+<li><code>server_run</code>: Complete the <em>select</em> event loop</li>
+<li><code>server_accept_new_client</code>: Complete the setup of new client connections</li>
+<li><code>server_handle_client_input</code>: Ensure that chat messages are broadcasted to all members of the channel</li>
+</ol>
+<p>From <code>client.c</code>:</p>
+<ol>
+<li><code>client_close</code>: When closing a client connection:<ul>
+<li>Remove its socket file descriptor from the servers' <code>all_sock_fds</code> set</li>
+<li>Use <code>channel_remove_client</code> to remove them from whatever channel they were in</li>
+</ul>
+</li>
+</ol>
+<p><em>Note:</em> The implementations of <code>client_new</code>, <code>client_write</code>, <code>client_printf</code> and <code>client_addrstr</code> are already complete, but it will be very helpful to understand what they can do for you!</p>
+<p>From <code>channel.c</code>:</p>
+<ol>
+<li><code>channel_broadcast</code>: Send a message to all clients currently in a channel</li>
+<li><code>channel_add_client</code>: When a client joins a channel, broadcast a notice message to everyone in the channel</li>
+<li><code>channel_remove_client</code>: When a client joins a channel, broadcast a notice message to everyone in the channel</li>
+</ol>
+<p><em>Note:</em> The implementations of <code>channel_find</code> and <code>channel_new</code> are already complete, and these functions will be useful when implementing the <em>/join</em> command. Also, <code>channel_broadcast_printf</code> will work correctly once you implement <code>channel_broadcast</code>, and you will similarly find it very useful.</p>
+<p>From <code>command.c</code>:</p>
+<ol>
+<li>
+<p><code>command_join</code>: Implement a client joining a channel</p>
+</li>
+<li>
+<p><code>command_nick</code>: Implement a client changing their nick name</p>
+</li>
+<li>
+<p><code>command_disconnect</code>: Add a departing message to the <em>/disconnect</em> command handler</p>
+</li>
+<li>
+<p><code>command_channels</code>: Implement a channel listing</p>
+</li>
+<li>
+<p><code>command_who</code>: Implement a listing of who else is a currently connected client</p>
+</li>
+</ol>
+<h2 id="what-to-submit">What to Submit</h2>
+<p>You <strong>MUST</strong> begin this assignment by checking in all of the starter code under
+the <code>a4</code> directory within your repository.</p>
+<p>If you forget to add a file or forget to commit a change, there is nothing that
+the course staff will be able to do for you.</p>
+<p>While understanding the entire organization of the server is necessary, you only have to make modifications to the following files:</p>
+<ul>
+<li><code>chatserver.c</code></li>
+<li><code>client.c</code></li>
+<li><code>channel.c</code></li>
+<li><code>command.c</code></li>
+</ul>
+<p>Search for the <code>TODO FIXME</code> comments and make sure you implement all the required functionality.</p>
+<h2 id="submission-checklist">Submission Checklist</h2>
+<p>Commit early and commit often (at least every 2-3 hours that you spend working
+on the assignment.) Consider this as insurance against any last minute SVN
+problems, or against possibly missing a deadline.</p>
+<p>Here is a list of things that you should do on the CDF server at least an hour
+before the assignment deadline:</p>
+<ul>
+<li>Create a new temporary directory in your account (different from the one you are working on the assignment from, and not even a subdirectory within that one)</li>
+<li>Check out a fresh copy of your repository into this empty directory</li>
+<li>Ensure that all the correct files have been committed, and that they are the latest versions you expected them to be</li>
+<li>Run <code>make</code> and ensure that <code>chatserver</code> and all of its prerequisites compile without warnings or errors.</li>
+<li>Run the <em>chatserver</em> on an unused TCP port of your choosing, and in a second SSH connection window, use <em>chatclient</em> to connect to the server</li>
+<li>Open a third SSH connection and run <em>chatclient</em> yet again; in both clients, try changing your name with the /nick command, joining other channels with /join, execute the /who and /channels commands and ensure you see both clients, and check that chat messages are correctly delivered</li>
+</ul>
+<p>Remember that your submission <strong>MUST</strong> compile and run correctly on CDF,
+without exception.</p>
+<hr />
+
+        </div>
+        <footer class="footer">
+            <div class="container">
+                <p class="text-muted">&copy; 2015 Karen Reid &amp; Peter McCormick</p>
+            </div>
+        </footer>
+        <script src="../theme/js/jquery-1.11.2.min.js"></script>
+        <script src="../theme/js/bootstrap.min.js"></script>
+        <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+        <script src="../theme/js/ie10-viewport-bug-workaround.js"></script>
+    </body>
+</html>
